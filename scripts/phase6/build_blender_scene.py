@@ -1,0 +1,142 @@
+"""Run with Blender: build terrain and animated water solely from prepared data."""
+from __future__ import annotations
+
+import json
+import math
+import os
+from pathlib import Path
+
+import bpy
+import numpy as np
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def material(name, color, metallic=0.0, roughness=0.6, alpha=1.0):
+    result = bpy.data.materials.new(name)
+    result.diffuse_color = (*color, alpha)
+    result.use_nodes = True
+    shader = result.node_tree.nodes.get("Principled BSDF")
+    shader.inputs["Base Color"].default_value = (*color, alpha)
+    shader.inputs["Roughness"].default_value = roughness
+    shader.inputs["Metallic"].default_value = metallic
+    if alpha < 1:
+        shader.inputs["Alpha"].default_value = alpha
+        try:
+            result.surface_render_method = "DITHERED"  # Blender 4.2+
+        except AttributeError:
+            result.blend_method = "BLEND"  # Blender 3.x/4.0 compatibility
+    return result
+
+
+def mesh_object(name, vertices, faces, material_value):
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(vertices, [], faces)
+    mesh.materials.append(material_value)
+    mesh.update()
+    object_value = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(object_value)
+    return object_value
+
+
+def grid_vertices(values, scale):
+    rows, cols = values.shape
+    return [((column - (cols - 1) / 2) * scale, (row - (rows - 1) / 2) * scale, values[row, column] / scale)
+            for row in range(rows) for column in range(cols)]
+
+
+def terrain_faces(rows, cols):
+    return [(row * cols + column, row * cols + column + 1, (row + 1) * cols + column + 1, (row + 1) * cols + column)
+            for row in range(rows - 1) for column in range(cols - 1)]
+
+
+def water_mesh(terrain, depth, arrival, elapsed, scale):
+    wet = (depth > 0) & np.isfinite(arrival) & (arrival <= elapsed)
+    rows, cols = terrain.shape
+    index, vertices = {}, []
+    for row, column in zip(*np.where(wet)):
+        index[(row, column)] = len(vertices)
+        vertices.append(((column - (cols - 1) / 2) * scale, (row - (rows - 1) / 2) * scale,
+                         (terrain[row, column] + depth[row, column]) / scale))
+    faces = []
+    for row in range(rows - 1):
+        for column in range(cols - 1):
+            corners = [(row, column), (row, column + 1), (row + 1, column + 1), (row + 1, column)]
+            if all(corner in index for corner in corners):
+                faces.append(tuple(index[corner] for corner in corners))
+    return vertices, faces
+
+
+def key_visibility(obj, frame, visible):
+    obj.hide_render = not visible
+    obj.hide_viewport = not visible
+    obj.keyframe_insert(data_path="hide_render", frame=frame)
+    obj.keyframe_insert(data_path="hide_viewport", frame=frame)
+
+
+def main():
+    # Keep Blender free of PyYAML: pass DAM_CASE_NAME for a non-default case.
+    case = os.environ.get("DAM_CASE_NAME", "rishiganga")
+    viz = ROOT / "output" / case / "viz_data"
+    metadata_path, data_path = viz / "metadata.json", viz / "flood_visualization.npz"
+    if not metadata_path.exists() or not data_path.exists():
+        raise RuntimeError("Run prepare_viz_data.py before opening Blender.")
+    metadata = json.loads(metadata_path.read_text())
+    arrays = np.load(data_path)
+    terrain, depth, arrival = arrays["terrain_m"], arrays["depth_m"], arrays["arrival_s"]
+    scale, frames = metadata["scene_scale_m_per_unit"], metadata["frames"]
+    for obj in list(bpy.data.objects):
+        bpy.data.objects.remove(obj, do_unlink=True)
+    terrain_material = material("Terrain", (0.13, 0.22, 0.08), roughness=0.95)
+    water_material = material("Flood water", (0.02, 0.16, 0.52), metallic=0.15, roughness=0.18, alpha=0.72)
+    mesh_object("Terrain", grid_vertices(terrain, scale), terrain_faces(*terrain.shape), terrain_material)
+    duration = metadata["simulation_duration_s"]
+    for frame in range(1, frames + 1):
+        elapsed = duration * (frame - 1) / (frames - 1)
+        vertices, faces = water_mesh(terrain, depth, arrival, elapsed, scale)
+        if not faces:
+            continue
+        water = mesh_object(f"Flood_{frame:04d}", vertices, faces, water_material)
+        for other in range(1, frames + 1):
+            key_visibility(water, other, other == frame)
+    bounds = metadata["bounds"]
+    lon_mid, lat_mid = (bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2
+    building_materials = {"none": material("Building intact", (0.55, 0.55, 0.52)),
+                          "low": material("Building low", (0.85, 0.7, 0.1)),
+                          "moderate": material("Building moderate", (0.9, 0.32, 0.06)),
+                          "severe": material("Building severe", (0.55, 0.03, 0.02))}
+    for building in json.loads((viz / "buildings.json").read_text()):
+        x = (building["lon"] - lon_mid) * 111_320 * math.cos(math.radians(lat_mid)) / scale
+        y = (building["lat"] - lat_mid) * 111_320 / scale
+        row, col = min(max(round((y / scale) + (terrain.shape[0] - 1) / 2), 0), terrain.shape[0] - 1), min(max(round((x / scale) + (terrain.shape[1] - 1) / 2), 0), terrain.shape[1] - 1)
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(x, y, terrain[row, col] / scale + 0.5))
+        building_object = bpy.context.object
+        building_object.name = f"Building_{building['id']}"
+        building_object.dimensions = (0.7, 0.7, 1.0)
+        building_object.data.materials.append(building_materials.get(building["damage_class"], building_materials["none"]))
+    bpy.ops.object.light_add(type="SUN", location=(0, 0, 100))
+    bpy.context.object.rotation_euler = (math.radians(25), math.radians(-20), math.radians(25))
+    bpy.ops.object.camera_add(location=(0, -max(terrain.shape) * scale * 0.9, max(terrain.shape) * scale * 0.65))
+    camera = bpy.context.object
+    bpy.context.scene.camera = camera
+    camera.data.lens = 40
+    camera.data.clip_end = 100_000
+    direction = -camera.location
+    camera.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+    scene = bpy.context.scene
+    scene.frame_start, scene.frame_end = 1, frames
+    try:
+        scene.render.engine = 'BLENDER_EEVEE_NEXT'
+    except TypeError:
+        scene.render.engine = 'BLENDER_EEVEE'
+    scene.render.resolution_x, scene.render.resolution_y = 1920, 1080
+    scene.render.resolution_percentage = 60
+    scene["input_verification"] = metadata["input_verification"]
+    scene["water_source"] = metadata["water_source"]
+    destination = ROOT / "output" / case / "dam_inundation_visualization.blend"
+    bpy.ops.wm.save_as_mainfile(filepath=str(destination))
+    print(f"Saved {destination}")
+
+
+if __name__ == "__main__":
+    main()

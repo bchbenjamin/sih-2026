@@ -1,0 +1,44 @@
+# SIH26161 — Case Study Configuration
+# Case: Chamoli / Rishiganga, Uttarakhand — 7 February 2021
+# Source: Shugar et al. 2021 (Science), NDMA Joint Study Team Report
+
+case_name: rishiganga
+dam_name: "Rishiganga moraine-dammed lake"
+dam_coordinates: [30.467794, 79.736056]  # [lat, lon]; see data/rishiganga/sources.md
+dam_type: natural
+formation_mechanism: "rock-ice avalanche debris damming, 7 Feb 2021"
+formation_date: "2021-02-07"
+blocking_material: "rock/ice/debris"
+
+# Lake geometry from Shugar et al. 2021 and related studies
+lake_length_m: 750.0        # ~700–800 m, mid-estimate
+lake_front_width_m: 100.0   # ~100 m front width
+lake_depth_m: 46.0          # ~46 m depth
+reservoir_volume_m3: 1725000.0  # Derived: 0.5 * L * W * D; see sources.md
+
+river_name: "Rishiganga / Dhauliganga"
+downstream_reach_km: 25.0   # Extend to Tapovan Vishnugad HEP and beyond
+
+# DEM configuration
+dem_source: "SRTM GL1 via OpenTopography (downloaded at runtime; no synthetic fallback)"
+dem_bbox: [79.55, 30.30, 79.90, 30.50]  # [min_lon, min_lat, max_lon, max_lat]
+                                          # Covers dam site through downstream reach
+
+# Key downstream exposure points (for Phase 5 validation points)
+downstream_points:
+  - name: "Rishiganga HEP"
+    coordinates: [30.4230, 79.7150]
+    distance_km: 3.5
+  - name: "Raini Village"
+    coordinates: [30.4290, 79.7090]
+    distance_km: 5.0
+  - name: "Tapovan Vishnugad HEP"
+    coordinates: [30.4640, 79.6250]
+    distance_km: 15.0
+
+execution:
+  nearfield_backend: dualsphysics
+  farfield_backend: delft3d_fm
+  delft3d_timebox_days: 3
+  model_scale_Lr: 40.0
+  crs: EPSG:4326

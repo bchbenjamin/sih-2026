@@ -1,0 +1,11 @@
+{
+  "source": "OpenTopography SRTMGL1",
+  "url": "https://portal.opentopography.org/API/globaldem?demtype=SRTMGL1&south=30.3&north=30.5&west=79.55&east=79.9&outputFormat=GTiff&API_Key=9a8e71191b57efed11ec8f8832dd62fb",
+  "bbox": [
+    79.55,
+    30.3,
+    79.9,
+    30.5
+  ],
+  "crs": "EPSG:4326"
+}

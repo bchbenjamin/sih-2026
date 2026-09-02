@@ -1,0 +1,7 @@
+# Copy to a non-committed calibration file and replace every example field with
+# a site-specific value that has been reviewed by a qualified modeller.
+# These values are intentionally null: they are not Rishiganga measurements.
+erodibility: medium
+breach_width_m:
+breach_time_s:
+citation: "Author, year, report/table/figure or calibrated-model run identifier"

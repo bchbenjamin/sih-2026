@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.local.yaml
+
+# Downloaded/source data. Keep provenance documents and small metadata in Git.
+data/*/*.tif
+data/*/*.tiff
+data/*/*.gpkg
+data/*/*.geojson
+data/*/*.npz
+!data/*/sources.md
+!data/*/.gitkeep
+
+# Reproducible run artefacts; never stage solver output or Blender caches.
+output/
+validation/*.json
+validation/*.png
+*.blend1
+
+# Solver / Blender runtime directories
+dualsphysics_runs/
+delft3d_runs/
+anuga_runs/
+blender_cache/
+*.bobj.gz
+*.bi4
+*.vtk
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

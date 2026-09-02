@@ -1,0 +1,10 @@
+# Core, portable pipeline dependencies
+numpy>=1.26
+PyYAML>=6.0
+rasterio>=1.3
+shapely>=2.0
+requests>=2.31
+
+# Optional backends (install only on the appropriate worker)
+# anuga
+# geopandas

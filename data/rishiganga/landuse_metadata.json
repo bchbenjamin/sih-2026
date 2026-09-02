@@ -1,0 +1,7 @@
+{
+  "source": "OpenStreetMap via Overpass",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:180];(way[\"landuse\"](30.3,79.55,30.5,79.9);way[\"natural\"](30.3,79.55,30.5,79.9););out center;",
+  "crs": "EPSG:4326",
+  "feature_count": 277
+}
