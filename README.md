@@ -109,15 +109,18 @@ python3 scripts/phase6/prepare_viz_data.py
 # Produces output/{case}/viz_data and metadata.json
 ```
 
-12) Build Blender scene (requires Blender binary)
+12) Build Blender scene with Mantaflow domain (requires Blender binary)
 
 ```bash
 # Either rely on system `blender` in PATH, or set BLENDER_BIN in env
+# This phase generates a physically baked Mantaflow simulation based on 
+# scaled hydrographs (driven by the Froude factors in scale_config.yaml), 
+# completely replacing the older disconnected per-cell mesh rendering.
 blender --background --python scripts/phase6/build_blender_scene.py
-# Or via the main runner (also accepts --visual-mode mantaflow|raster):
-python3 run_pipeline.py --phase 6 --visual-mode mantaflow
-# Note: This last command launches Blender; in my local run the `blender`
-# binary was not found and the pipeline raised FileNotFoundError. Set
+# Or via the main runner (which defaults to mantaflow mode):
+python3 run_pipeline.py --phase 6
+# Note: This command launches Blender and bakes the fluid simulation.
+# If `blender` is not found, the pipeline raises FileNotFoundError. Set
 # BLENDER_BIN or install Blender to proceed.
 ```
 

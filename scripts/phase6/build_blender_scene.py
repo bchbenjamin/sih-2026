@@ -188,8 +188,23 @@ def main():
         from mantaflow_scene import setup as setup_mantaflow
         hydrograph_path = ROOT / "output" / case / "hydrograph.csv"
         if not hydrograph_path.exists():
+            hydrograph_path = ROOT / "output" / case / "standalone" / "hydrograph.csv"
+        if not hydrograph_path.exists():
             raise RuntimeError(f"Mantaflow visual mode requires {hydrograph_path}")
-        setup_mantaflow(terrain_object, hydrograph_path, scale, duration)
+        
+        # Get scaling and breach location from environment
+        discharge_ratio = float(os.environ.get("DAM_DISCHARGE_RATIO", "1.0"))
+        b_lat = float(os.environ.get("DAM_BREACH_LAT", "30.745"))
+        b_lon = float(os.environ.get("DAM_BREACH_LON", "79.055"))
+        
+        # Convert breach lat/lon to Blender coordinates
+        bx = (b_lon - lon_mid) * 111_320 * math.cos(math.radians(lat_mid)) / scale
+        by = (lat_mid - b_lat) * 111_320 / scale
+        b_row = min(max(round((by * scale / y_cell_m) + (terrain.shape[0] - 1) / 2), 0), terrain.shape[0] - 1)
+        b_col = min(max(round((bx * scale / x_cell_m) + (terrain.shape[1] - 1) / 2), 0), terrain.shape[1] - 1)
+        bz = terrain[b_row, b_col] / scale
+        
+        setup_mantaflow(terrain_object, hydrograph_path, scale, duration, (bx, by, bz), discharge_ratio, water_material)
         scene["mantaflow_note"] = "Presentation only; raster output remains the hydrodynamic source of truth."
     destination = ROOT / "output" / case / "dam_inundation_visualization.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(destination))

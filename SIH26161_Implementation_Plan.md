@@ -230,9 +230,9 @@ Run this once per scenario from Phase 4 (hybrid and standalone) for the comparis
 - Import the `blender_mesh_sequence/` from Phase 2.6 (VisualSPHysics or Splashsurf output) at the correct location/orientation matching the real dam coordinates.
 
 ### 6.3 Far-field
-- Set up a **Mantaflow** domain over the downstream terrain.
-- Drive the domain's inflow object emission rate from `hydrograph.csv` (Phase 2.5, prototype-scale), keyframed or scripted via a CSV-driving Python script inside Blender.
-- Optionally cross-check the resulting Mantaflow flood extent visually against `farfield_depth.tif`/`farfield_arrival.tif` from Phase 3 — they won't match exactly (Mantaflow is not a validated hydrodynamic solver) but gross mismatches (flood going the wrong direction, wildly wrong timing) indicate a setup error worth catching before the demo.
+- Set up a **Mantaflow** domain over the downstream terrain. This replaces the disconnected per-cell mesh as the final visualization approach.
+- Drive the domain's inflow object emission rate from `hydrograph.csv` (Phase 2.5, scaled down using the discharge_ratio_Qr Froude factor), keyframed via a script.
+- Ensure the terrain is a Solidify-thickened collision effector and that the domain encompasses the real breach coordinates.
 
 ### 6.4 Destruction
 - Load `damage.csv` from Phase 5.

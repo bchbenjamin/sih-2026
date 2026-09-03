@@ -39,7 +39,7 @@ def main() -> None:
     parser.add_argument("--calibration", type=Path,
                         help="Cited breach-calibration YAML required for a real Phase 2 run")
     parser.add_argument("--blender-bin", default=os.getenv("BLENDER_BIN", "blender"))
-    parser.add_argument("--visual-mode", choices=("raster", "mantaflow"), default="raster")
+    parser.add_argument("--visual-mode", choices=("raster", "mantaflow"), default="mantaflow")
     args = parser.parse_args()
     phases = {0: [], 1: ["scripts/phase1/run_phase1.py"],
               2: ["scripts/phase2/breach_parameters.py", "scripts/phase2/scale_config.py", "scripts/phase2/run_case.py"],
@@ -51,10 +51,22 @@ def main() -> None:
             call("scripts/phase6/prepare_viz_data.py", "--resolution", "128")
             environment = os.environ.copy()
             
-            # Get case name from case_config.yaml to pass to Blender
+            # Get case name and breach coordinates from case_config.yaml to pass to Blender
             import yaml
-            case = yaml.safe_load((ROOT / "case_config.yaml").read_text())["case_name"]
+            case_config = yaml.safe_load((ROOT / "case_config.yaml").read_text())
+            case = case_config["case_name"]
+            
+            # Get scaling factors
+            scale_config_path = ROOT / "output" / case / "scale_config.yaml"
+            if scale_config_path.exists():
+                scale_config = yaml.safe_load(scale_config_path.read_text())
+                environment["DAM_DISCHARGE_RATIO"] = str(scale_config.get("discharge_ratio_Qr", 1.0))
+            else:
+                environment["DAM_DISCHARGE_RATIO"] = "1.0"
+                
             environment["DAM_CASE_NAME"] = case
+            environment["DAM_BREACH_LAT"] = str(case_config["dam_coordinates"][0])
+            environment["DAM_BREACH_LON"] = str(case_config["dam_coordinates"][1])
             environment["DAM_VISUAL_MODE"] = args.visual_mode
             
             subprocess.run([args.blender_bin, "--background", "--python",
