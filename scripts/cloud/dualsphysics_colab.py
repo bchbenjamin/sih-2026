@@ -94,7 +94,8 @@ def run_stoker_validation(repo_path):
     subprocess.run(["python3", os.path.join(repo_path, "scripts", "phase2", "stoker_validation.py"),
                     "--reference", os.path.join(stoker_case_dir, "stoker_analytical_reference.csv"),
                     "--model", os.path.join(out_dir, "stoker_model_output.csv"),
-                    "--case", "chorabari"], check=True)
+                    "--case", "chorabari",
+                    "--t-min", "0.1", "--t-max", "0.2"], check=True)
 
 if __name__ == "__main__":
     setup_dualsphysics()

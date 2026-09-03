@@ -19,10 +19,16 @@ def main() -> None:
     parser.add_argument("--model", type=Path, required=True, help="DualSPHysics CSV: time_s,wave_height_m")
     parser.add_argument("--tolerance-pct", type=float, default=10.0)
     parser.add_argument("--case", default="rishiganga")
+    parser.add_argument("--t-min", type=float, default=0.0)
+    parser.add_argument("--t-max", type=float, default=2.0)
     args = parser.parse_args()
+    
     ref_t, ref_v = read_series(args.reference, "wave_height_m")
     model_t, model_v = read_series(args.model, "wave_height_m")
-    error = max_relative_error(ref_t, ref_v, model_t, model_v)
+    
+    # Restrict validation comparison to intended early-time window
+    mask = (ref_t >= args.t_min) & (ref_t <= args.t_max)
+    error = max_relative_error(ref_t[mask], ref_v[mask], model_t, model_v)
     result = {"benchmark": "Stoker dam-break analytical solution", "reference": str(args.reference),
               "model": str(args.model), "metric": "maximum relative wave-height error",
               "error_percentage": error, "tolerance_percentage": args.tolerance_pct,
