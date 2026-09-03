@@ -1,0 +1,467 @@
+
+
+ <DUALSPHYSICS4> Copyright (c) 2019 by
+ Dr Jose M. Dominguez, Dr Alejandro Crespo,
+ Prof. Moncho Gomez Gesteira,  Prof. Benedict Rogers,
+ Dr Georgios Fourtakas, Prof. Peter Stansby, Dr Ricardo Canelas,
+ Dr Renato Vacondio, Dr Corrado Altomare, Dr Angelo Tafuni,
+ Orlando Garcia-Feal, Dr Jose Gonzalez Cao
+
+ EPHYSLAB Environmental Physics Laboratory, Universidade de Vigo
+ School of Mechanical, Aerospace and Civil Engineering, University of Manchester
+
+ DualSPHysics is free software: you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public License
+ as published by the Free Software Foundation, either version 2.1 of
+ the License, or (at your option) any later version.
+
+ DualSPHysics is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with DualSPHysics. If not, see <http://www.gnu.org/licenses/>.
+
+
+DualSPHysics4 v4.4.003 (10-04-2019)
+====================================
+Threads by host for parallel execution: 8
+[Initialising JSphCpuSingle  03-09-2026 19:25:40]
+ProgramFile=".../dualsphysics/bin/DualSPHysics4.4CPU_linux64"
+ExecutionDir=".../Fedora/Projects/Dam_Inundation"
+XmlFile=".../stoker/stoker_out/CaseDambreakVal2D.xml"
+OutputDir=".../cases/stoker/stoker_out"
+OutputDataDir=".../cases/stoker/stoker_out"
+**Basic case configuration is loaded
+**Special case configuration is loaded
+Loading initial state of particles...
+Loaded particles: 21001
+MapRealPos(border)=(-0.000707107,-0.000707107,-0.000707107)-(4.00071,0.000707107,3.00071)
+MapRealPos(final)=(-0.000707107,-0.000707107,-0.000707107)-(4.00071,0.000707107,4.50141)
+**Initial state of particles is loaded
+**2D-Simulation parameters:
+CaseName="CaseDambreakVal2D"
+RunName="CaseDambreakVal2D"
+Simulate2DPosY=0
+PosDouble="1: Uses double and stores in single precision"
+SvTimers=True
+StepAlgorithm="Verlet"
+VerletSteps=40
+Kernel="Wendland"
+Viscosity="Artificial"
+Visco=0.020000
+ViscoBoundFactor=1.000000
+DeltaSph="None"
+Shifting="None"
+RigidAlgorithm="None"
+FloatingCount=0
+CaseNp=21001
+CaseNbound=1001
+CaseNfixed=1001
+CaseNmoving=0
+CaseNfloat=0
+CaseNfluid=20000
+PeriodicActive="None"
+Dx=0.01
+H=0.014142
+CoefficientH=1
+CteB=1115537.125000
+Gamma=7.000000
+RhopZero=1000.000000
+Cs0=88.3672
+CFLnumber=0.200000
+DtIni=0.000160038
+DtMin=8.00192e-06
+DtAllParticles=False
+MassFluid=0.100000
+MassBound=0.100000
+Awen (Wendland)=2784.999756
+Bwen (Wendland)=-984716.812500
+TimeMax=2
+TimePart=0.01
+Gravity=(0.000000,0.000000,-9.810000)
+NpMinimum=1001
+RhopOut=True
+RhopOutMin=700.000000
+RhopOutMax=1300.000000
+**Requested cpu memory for 21011 particles: 2.3 MB.
+CellMode="2H"
+Hdiv=1
+MapCells=(142,1,160)
+DomCells=(142,1,160)
+DomCellCode="13_7_12"
+**CellDiv: Requested cpu memory for 22061 particles: 0.7 MB.
+**CellDiv: Requested cpu memory for 5548 cells (CellMode=2H): 0.1 MB.
+ 
+RunMode="Pos-Double - OpenMP(Threads:8)"
+ 
+Particle summary:
+  Fixed....: 1001  id:(0-1000)   MKs:1 (11)
+  Moving...: 0
+  Floating.: 0
+  Fluid....: 20000  id:(1001-21000)   MKs:1 (1)
+
+Total particles: 21001 (bound=1001 (fx=1001 mv=0 ft=0) fluid=20000)
+Total MK blocks: 2 (bound=1 (fx=1 mv=0 ft=0) fluid=1)
+ 
+GaugeSystem configuration:
+Guage_0: 'Swl_x02'
+  Type.......: SWL
+  Compute....: 0 - 2   dt:0.01
+  Output.....: 0 - 2   dt:0.01
+  SaveVtkPart: True
+  MassLimit..: 0.04
+  GaugePoints: (0.2,0,-0.05)-(0.2,0,2.1)
+  PointDp....: 0.005
+Guage_1: 'Swl_z003'
+  Type.......: SWL
+  Compute....: 0 - 2   dt:0.005
+  Output.....: 0 - 2   dt:0.005
+  SaveVtkPart: True
+  MassLimit..: 0.04
+  GaugePoints: (-0.05,0,0.03)-(4.05,0,0.03)
+  PointDp....: 0.005
+ 
+Allocated memory in CPU: 3232040 (3.08 MB)
+Part_0000        21001 particles successfully stored
+
+[Initialising simulation (6kn8lsct)  03-09-2026 19:25:40]
+PART       PartTime      TotalSteps    Steps    Time/Sec   Finish time        
+=========  ============  ============  =======  =========  ===================
+Part_0001      0.010017           314      314     177.78  03-09-2026 19:31:34
+Part_0002      0.020012           628      314     171.88  03-09-2026 19:31:29
+Part_0003      0.030018           942      314     169.12  03-09-2026 19:31:25
+Part_0004      0.040011          1256      314     174.60  03-09-2026 19:31:27
+Part_0005      0.050013          1571      315     194.55  03-09-2026 19:31:35
+Part_0006      0.060022          1887      316     203.60  03-09-2026 19:31:44
+Part_0007      0.070010          2202      315     175.53  03-09-2026 19:31:41
+Part_0008      0.080029          2518      316     222.66  03-09-2026 19:31:52
+Part_0009      0.090002          2833      315     254.40  03-09-2026 19:32:07
+Part_0010      0.100001          3149      316     220.39  03-09-2026 19:32:12
+Part_0011      0.110014          3466      317     186.81  03-09-2026 19:32:10
+Part_0012      0.120001          3782      316     178.84  03-09-2026 19:32:08
+Part_0013      0.130030          4100      318     195.57  03-09-2026 19:32:08
+Part_0014      0.140017          4417      317     184.72  03-09-2026 19:32:07
+Part_0015      0.150024          4735      318     196.97  03-09-2026 19:32:07
+Part_0016      0.160006          5052      317     231.85  03-09-2026 19:32:12
+Part_0017      0.170003          5370      318     189.41  03-09-2026 19:32:11
+Part_0018      0.180022          5689      319     188.09  03-09-2026 19:32:10
+Part_0019      0.190027          6007      318     184.69  03-09-2026 19:32:09
+Part_0020      0.200006          6324      317     228.26  03-09-2026 19:32:12
+Part_0021      0.210004          6641      317     242.09  03-09-2026 19:32:16
+Part_0022      0.220015          6960      319     189.23  03-09-2026 19:32:16
+Part_0023      0.230011          7278      318     203.95  03-09-2026 19:32:16
+Part_0024      0.240000          7597      319     245.14  03-09-2026 19:32:21
+Part_0025      0.250017          7917      320     227.64  03-09-2026 19:32:22
+Part_0026      0.260029          8236      319     217.17  03-09-2026 19:32:23
+Part_0027      0.270009          8554      318     197.31  03-09-2026 19:32:23
+Part_0028      0.280023          8876      322     218.55  03-09-2026 19:32:24
+Part_0029      0.290006          9196      320     281.04  03-09-2026 19:32:30
+Part_0030      0.300028          9515      319     277.72  03-09-2026 19:32:35
+Part_0031      0.310024          9833      318     229.95  03-09-2026 19:32:36
+Part_0032      0.320007         10153      320     250.48  03-09-2026 19:32:39
+Part_0033      0.330012         10474      321     267.66  03-09-2026 19:32:42
+Part_0034      0.340024         10795      321     295.84  03-09-2026 19:32:47
+Part_0035      0.350012         11116      321     309.08  03-09-2026 19:32:53
+Part_0036      0.360030         11438      322     294.11  03-09-2026 19:32:57
+Part_0037      0.370030         11758      320     290.83  03-09-2026 19:33:01
+Part_0038      0.380026         12078      320     233.45  03-09-2026 19:33:02
+Part_0039      0.390015         12398      320     216.72  03-09-2026 19:33:02
+Part_0040      0.400011         12718      320     215.92  03-09-2026 19:33:01
+Part_0041      0.410010         13039      321     214.12  03-09-2026 19:33:01
+Part_0042      0.420017         13361      322     204.21  03-09-2026 19:33:00
+Part_0043      0.430022         13681      320     217.66  03-09-2026 19:33:00
+Part_0044      0.440010         14001      320     214.15  03-09-2026 19:33:00
+Part_0045      0.450019         14320      319     200.30  03-09-2026 19:32:59
+Part_0046      0.460029         14642      322     215.26  03-09-2026 19:32:59
+Part_0047      0.470020         14962      320     255.42  03-09-2026 19:33:00
+Part_0048      0.480008         15287      325     241.28  03-09-2026 19:33:01
+Part_0049      0.490025         15611      324     207.80  03-09-2026 19:33:01
+Part_0050      0.500026         15932      321     231.95  03-09-2026 19:33:01
+Part_0051      0.510019         16253      321     215.34  03-09-2026 19:33:00
+Part_0052      0.520031         16575      322     212.15  03-09-2026 19:33:00
+Part_0053      0.530000         16894      319     272.10  03-09-2026 19:33:02
+Part_0054      0.540015         17215      321     277.19  03-09-2026 19:33:05
+Part_0055      0.550018         17535      320     212.71  03-09-2026 19:33:04
+Part_0056      0.560020         17857      322     201.43  03-09-2026 19:33:03
+Part_0057      0.570009         18180      323     205.63  03-09-2026 19:33:03
+Part_0058      0.580012         18503      323     242.74  03-09-2026 19:33:03
+Part_0059      0.590015         18824      321     315.89  03-09-2026 19:33:07
+Part_0060      0.600006         19144      320     315.55  03-09-2026 19:33:10
+Part_0061      0.610027         19465      321     299.89  03-09-2026 19:33:12
+Part_0062      0.620014         19786      321     264.65  03-09-2026 19:33:13
+**CellDiv: Requested cpu memory for 11524 cells (CellMode=2H): 0.2 MB.
+Part_0063      0.630024         20107      321     271.89  03-09-2026 19:33:15
+Part_0064      0.640028         20428      321     247.90  03-09-2026 19:33:16
+Part_0065      0.650000         20748      320     285.90  03-09-2026 19:33:18
+Part_0066      0.660028         21069      321     202.60  03-09-2026 19:33:17
+Part_0067      0.670013         21406      337     259.49  03-09-2026 19:33:17
+Part_0068      0.680004         21937      531     366.54  03-09-2026 19:33:22
+Part_0069      0.690001         22570      633     447.07  03-09-2026 19:33:27
+Part_0070      0.700011         23162      592     391.50  03-09-2026 19:33:32
+Part_0071      0.710013         23735      573     394.19  03-09-2026 19:33:36
+Part_0072      0.720004         24287      552     407.43  03-09-2026 19:33:41
+Part_0073      0.730012         24830      543     357.60  03-09-2026 19:33:45
+Part_0074      0.740006         25357      527     360.59  03-09-2026 19:33:47
+Part_0075      0.750007         25880      523     391.35  03-09-2026 19:33:51
+Part_0076      0.760012         26400      520     447.80  03-09-2026 19:33:57
+Part_0077      0.770015         26910      510     437.44  03-09-2026 19:34:02
+Part_0078      0.780008         27419      509     466.14  03-09-2026 19:34:08
+Part_0079      0.790004         27920      501     362.92  03-09-2026 19:34:10
+Part_0080      0.800013         28418      498     342.18  03-09-2026 19:34:12
+Part_0081      0.810004         28913      495     346.49  03-09-2026 19:34:14
+Part_0082      0.820020         29405      492     349.01  03-09-2026 19:34:17
+Part_0083      0.830001         29892      487     354.55  03-09-2026 19:34:19
+Part_0084      0.840020         30375      483     347.95  03-09-2026 19:34:21
+**CellDiv: Requested cpu memory for 23738 cells (CellMode=2H): 0.4 MB.
+Part_0085      0.850010         30850      475     329.87  03-09-2026 19:34:23
+Part_0086      0.860005         31323      473     327.34  03-09-2026 19:34:24
+Part_0087      0.870002         31793      470     323.82  03-09-2026 19:34:26
+Part_0088      0.880003         32260      467     327.26  03-09-2026 19:34:27
+Part_0089      0.890016         32724      464     329.51  03-09-2026 19:34:28
+Part_0090      0.900021         33183      459     316.56  03-09-2026 19:34:29
+Part_0091      0.910010         33638      455     310.86  03-09-2026 19:34:31
+Part_0092      0.920010         34091      453     314.73  03-09-2026 19:34:32
+Part_0093      0.930006         34539      448     319.01  03-09-2026 19:34:33
+Part_0094      0.940022         34984      445     370.43  03-09-2026 19:34:36
+Part_0095      0.950004         35426      442     383.34  03-09-2026 19:34:37
+Part_0096      0.960017         35863      437     382.36  03-09-2026 19:34:40
+Part_0097      0.970018         36298      435     324.36  03-09-2026 19:34:42
+Part_0098      0.980022         36729      431     300.05  03-09-2026 19:34:42
+Part_0099      0.990015         37155      426     332.51  03-09-2026 19:34:43
+Part_0100      1.000005         37579      424     396.54  03-09-2026 19:34:46
+Part_0101      1.010024         38000      421     328.27  03-09-2026 19:34:46
+Part_0102      1.020018         38417      417     288.47  03-09-2026 19:34:47
+Part_0103      1.030002         38831      414     278.57  03-09-2026 19:34:47
+Part_0104      1.040024         39241      410     286.85  03-09-2026 19:34:48
+Part_0105      1.050019         39648      407     365.69  03-09-2026 19:34:49
+Part_0106      1.060002         40008      360     262.03  03-09-2026 19:34:49
+  Particles out: 3  (total: 3)
+Part_0107      1.070021         40357      349     237.45  03-09-2026 19:34:48
+Part_0108      1.080026         40701      344     309.04  03-09-2026 19:34:48
+  Particles out: 3  (total: 6)
+Part_0109      1.090026         41032      331     300.73  03-09-2026 19:34:49
+Part_0110      1.100001         41356      324     264.47  03-09-2026 19:34:49
+  Particles out: 11  (total: 17)
+Part_0111      1.110007         41678      322     327.36  03-09-2026 19:34:50
+  Particles out: 48  (total: 65)
+Part_0112      1.120012         42000      322     295.61  03-09-2026 19:34:50
+  Particles out: 10  (total: 75)
+Part_0113      1.130028         42322      322     218.74  03-09-2026 19:34:49
+  Particles out: 26  (total: 101)
+Part_0114      1.140018         42643      321     235.31  03-09-2026 19:34:49
+  Particles out: 22  (total: 123)
+Part_0115      1.150019         42964      321     218.65  03-09-2026 19:34:48
+  Particles out: 8  (total: 131)
+Part_0116      1.160008         43285      321     228.91  03-09-2026 19:34:47
+  Particles out: 19  (total: 150)
+Part_0117      1.170030         43607      322     208.56  03-09-2026 19:34:45
+  Particles out: 7  (total: 157)
+Part_0118      1.180022         43928      321     250.78  03-09-2026 19:34:45
+Part_0119      1.190021         44249      321     247.12  03-09-2026 19:34:45
+Part_0120      1.200014         44570      321     231.27  03-09-2026 19:34:45
+  Particles out: 5  (total: 162)
+Part_0121      1.210027         44892      322     221.21  03-09-2026 19:34:43
+  Particles out: 16  (total: 178)
+Part_0122      1.220017         45213      321     234.18  03-09-2026 19:34:43
+  Particles out: 12  (total: 190)
+Part_0123      1.230014         45534      321     253.48  03-09-2026 19:34:43
+  Particles out: 14  (total: 204)
+Part_0124      1.240030         45855      321     218.78  03-09-2026 19:34:42
+  Particles out: 14  (total: 218)
+Part_0125      1.250003         46175      320     213.23  03-09-2026 19:34:41
+  Particles out: 4  (total: 222)
+Part_0126      1.260009         46496      321     207.43  03-09-2026 19:34:40
+  Particles out: 12  (total: 234)
+Part_0127      1.270005         46816      320     209.06  03-09-2026 19:34:38
+  Particles out: 11  (total: 245)
+Part_0128      1.280025         47137      321     204.41  03-09-2026 19:34:37
+  Particles out: 17  (total: 262)
+Part_0129      1.290012         47457      320     207.12  03-09-2026 19:34:36
+Part_0130      1.300007         47777      320     218.36  03-09-2026 19:34:36
+  Particles out: 15  (total: 277)
+Part_0131      1.310004         48097      320     216.28  03-09-2026 19:34:35
+  Particles out: 5  (total: 282)
+Part_0132      1.320015         48418      321     230.37  03-09-2026 19:34:35
+  Particles out: 10  (total: 292)
+Part_0133      1.330007         48738      320     288.90  03-09-2026 19:34:35
+  Particles out: 10  (total: 302)
+Part_0134      1.340017         49059      321     247.71  03-09-2026 19:34:34
+  Particles out: 12  (total: 314)
+Part_0135      1.350005         49379      320     245.31  03-09-2026 19:34:34
+  Particles out: 13  (total: 327)
+Part_0136      1.360005         49699      320     228.28  03-09-2026 19:34:34
+  Particles out: 8  (total: 335)
+Part_0137      1.370006         50019      320     216.31  03-09-2026 19:34:33
+  Particles out: 9  (total: 344)
+Part_0138      1.380010         50339      320     240.12  03-09-2026 19:34:33
+Part_0139      1.390017         50659      320     218.32  03-09-2026 19:34:32
+  Particles out: 4  (total: 348)
+Part_0140      1.400028         50979      320     212.21  03-09-2026 19:34:31
+  Particles out: 6  (total: 354)
+Part_0141      1.410010         51298      319     226.87  03-09-2026 19:34:30
+  Particles out: 5  (total: 359)
+Part_0142      1.420022         51618      320     273.58  03-09-2026 19:34:31
+  Particles out: 7  (total: 366)
+Part_0143      1.430004         51937      319     310.18  03-09-2026 19:34:31
+  Particles out: 5  (total: 371)
+Part_0144      1.440031         52257      320     232.90  03-09-2026 19:34:31
+  Particles out: 5  (total: 376)
+Part_0145      1.450003         52575      318     217.06  03-09-2026 19:34:31
+  Particles out: 5  (total: 381)
+Part_0146      1.460007         52894      319     223.70  03-09-2026 19:34:30
+  Particles out: 9  (total: 390)
+Part_0147      1.470029         53213      319     238.08  03-09-2026 19:34:29
+  Particles out: 10  (total: 400)
+Part_0148      1.480028         53532      319     241.69  03-09-2026 19:34:29
+  Particles out: 11  (total: 411)
+Part_0149      1.490001         53850      318     266.08  03-09-2026 19:34:29
+  Particles out: 4  (total: 415)
+Part_0150      1.500022         54170      320     224.61  03-09-2026 19:34:29
+  Particles out: 5  (total: 420)
+Part_0151      1.510008         54488      318     216.42  03-09-2026 19:34:28
+  Particles out: 3  (total: 423)
+Part_0152      1.520001         54806      318     226.38  03-09-2026 19:34:27
+  Particles out: 3  (total: 426)
+Part_0153      1.530003         55124      318     217.03  03-09-2026 19:34:26
+  Particles out: 4  (total: 430)
+Part_0154      1.540025         55443      319     268.39  03-09-2026 19:34:27
+  Particles out: 3  (total: 433)
+Part_0155      1.550004         55760      317     214.64  03-09-2026 19:34:26
+  Particles out: 4  (total: 437)
+Part_0156      1.560013         56078      318     220.13  03-09-2026 19:34:25
+  Particles out: 2  (total: 439)
+Part_0157      1.570030         56396      318     253.15  03-09-2026 19:34:26
+  Particles out: 2  (total: 441)
+Part_0158      1.580027         56713      317     211.95  03-09-2026 19:34:25
+  Particles out: 6  (total: 447)
+Part_0159      1.590030         57030      317     202.12  03-09-2026 19:34:24
+  Particles out: 2  (total: 449)
+Part_0160      1.600012         57346      316     219.61  03-09-2026 19:34:23
+  Particles out: 2  (total: 451)
+Part_0161      1.610010         57663      317     203.29  03-09-2026 19:34:23
+  Particles out: 1  (total: 452)
+Part_0162      1.620006         57980      317     227.01  03-09-2026 19:34:22
+  Particles out: 6  (total: 458)
+Part_0163      1.630018         58297      317     222.53  03-09-2026 19:34:22
+  Particles out: 4  (total: 462)
+Part_0164      1.640006         58613      316     278.09  03-09-2026 19:34:22
+  Particles out: 3  (total: 465)
+Part_0165      1.650028         58930      317     217.01  03-09-2026 19:34:22
+  Particles out: 1  (total: 466)
+Part_0166      1.660002         59245      315     222.42  03-09-2026 19:34:21
+  Particles out: 2  (total: 468)
+Part_0167      1.670018         59563      318     233.68  03-09-2026 19:34:21
+  Particles out: 2  (total: 470)
+Part_0168      1.680004         59879      316     224.91  03-09-2026 19:34:20
+  Particles out: 1  (total: 471)
+Part_0169      1.690022         60196      317     223.26  03-09-2026 19:34:20
+Part_0170      1.700007         60512      316     236.68  03-09-2026 19:34:20
+  Particles out: 4  (total: 475)
+Part_0171      1.710025         60829      317     222.61  03-09-2026 19:34:19
+  Particles out: 2  (total: 477)
+Part_0172      1.720010         61146      317     218.28  03-09-2026 19:34:18
+Part_0173      1.730006         61462      316     211.08  03-09-2026 19:34:19
+  Particles out: 2  (total: 479)
+Part_0174      1.740017         61780      318     271.88  03-09-2026 19:34:18
+  Particles out: 5  (total: 484)
+Part_0175      1.750014         62097      317     205.97  03-09-2026 19:34:17
+  Particles out: 4  (total: 488)
+Part_0176      1.760016         62414      317     210.19  03-09-2026 19:34:17
+  Particles out: 7  (total: 495)
+Part_0177      1.770000         62730      316     203.59  03-09-2026 19:34:17
+  Particles out: 2  (total: 497)
+Part_0178      1.780005         63047      317     204.61  03-09-2026 19:34:16
+  Particles out: 7  (total: 504)
+Part_0179      1.790030         63365      318     218.75  03-09-2026 19:34:16
+  Particles out: 4  (total: 508)
+Part_0180      1.800008         63683      318     238.33  03-09-2026 19:34:15
+  Particles out: 5  (total: 513)
+Part_0181      1.810016         64001      318     225.37  03-09-2026 19:34:14
+  Particles out: 3  (total: 516)
+Part_0182      1.820020         64319      318     210.20  03-09-2026 19:34:14
+Part_0183      1.830000         64638      319     251.94  03-09-2026 19:34:14
+  Particles out: 3  (total: 519)
+Part_0184      1.840002         64957      319     214.77  03-09-2026 19:34:14
+  Particles out: 7  (total: 526)
+Part_0185      1.850017         65278      321     223.82  03-09-2026 19:34:13
+Part_0186      1.860013         65608      330     230.09  03-09-2026 19:34:13
+  Particles out: 9  (total: 535)
+Part_0187      1.870008         65932      324     231.44  03-09-2026 19:34:13
+  Particles out: 10  (total: 545)
+Part_0188      1.880010         66255      323     260.68  03-09-2026 19:34:13
+  Particles out: 11  (total: 556)
+Part_0189      1.890006         66577      322     213.59  03-09-2026 19:34:13
+  Particles out: 3  (total: 559)
+Part_0190      1.900030         66899      322     223.20  03-09-2026 19:34:12
+  Particles out: 8  (total: 567)
+Part_0191      1.910017         67221      322     204.39  03-09-2026 19:34:12
+  Particles out: 5  (total: 572)
+Part_0192      1.920015         67544      323     219.25  03-09-2026 19:34:11
+  Particles out: 9  (total: 581)
+Part_0193      1.930015         67869      325     213.89  03-09-2026 19:34:10
+  Particles out: 11  (total: 592)
+Part_0194      1.940026         68198      329     239.88  03-09-2026 19:34:11
+  Particles out: 5  (total: 597)
+Part_0195      1.950005         68533      335     242.68  03-09-2026 19:34:10
+  Particles out: 9  (total: 606)
+Part_0196      1.960005         68869      336     351.94  03-09-2026 19:34:12
+  Particles out: 6  (total: 612)
+Part_0197      1.970006         69256      387     356.13  03-09-2026 19:34:12
+  Particles out: 3  (total: 615)
+Part_0198      1.980018         69788      532     356.67  03-09-2026 19:34:14
+  Particles out: 10  (total: 625)
+Part_0199      1.990000         70256      468     375.93  03-09-2026 19:34:15
+  Particles out: 4  (total: 629)
+Part_0200      2.000012         70723      467     319.06  03-09-2026 19:34:16
+  Particles out: 1  (total: 630)
+
+[Simulation finished  03-09-2026 19:34:16]
+Particles of simulation (initial): 21001
+DTs adjusted to DtMin............: 0
+Excluded particles...............: 630
+Total Runtime....................: 516.241089 sec.
+Simulation Runtime...............: 516.194519 sec.
+Time per second of simulation....: 258.095703 sec.
+Steps per second.................: 137.008423
+Steps of simulation..............: 70723
+PART files.......................: 201
+Maximum number of particles......: 21001
+Maximum number of cells..........: 22720
+CPU Memory.......................: 3613125 (3.45 MB)
+ 
+[CPU Timers]
+VA-Init..........................: 0.046755 sec.
+NL-Limits........................: 13.162148 sec.
+NL-MakeSort......................: 15.778322 sec.
+NL-SortData......................: 18.656919 sec.
+NL-OutCheck......................: 0.006179 sec.
+CF-PreForces.....................: 28.741701 sec.
+CF-Forces........................: 400.910614 sec.
+SU-Shifting......................: 0.000000 sec.
+SU-ComputeStep...................: 36.502186 sec.
+SU-Floating......................: 0.000000 sec.
+SU-Motion........................: 0.000000 sec.
+SU-Periodic......................: 0.000000 sec.
+SU-ResizeNp......................: 0.000000 sec.
+SU-SavePart......................: 1.965446 sec.
+SU-Chrono........................: 0.000000 sec.
+SU-BoundCorr.....................: 0.000000 sec.
+SU-InOut.........................: 0.000000 sec.
+ 
+[Output files]
+- CfgGauge_InitPoints.vtk....: Saves points used for gauge calculations (by JGaugeSystem).
+- CfgInit_Domain.vtk.........: Saves the limits of the case and the simulation domain limits.
+- CfgInit_MapCells.vtk.......: Saves the cell division of the simulation domain.
+- GaugesSWL_Swl_x02.csv......: Saves SWL data measured from fluid particles (by JGaugeSwl).
+- GaugesSWL_Swl_x02_????.vtk.: Saves SWL data measured from fluid particles (by JGaugeSwl).
+- GaugesSWL_Swl_z003.csv.....: Saves SWL data measured from fluid particles (by JGaugeSwl).
+- GaugesSWL_Swl_z003_????.vtk: Saves SWL data measured from fluid particles (by JGaugeSwl).
+- PartInfo.ibi4..............: Binary file with execution information for each instant (input for PartInfo program).
+- PartOut_???.obi4...........: Binary file with particles excluded during simulation (input for PartVtkOut program).
+- Part_????.bi4..............: Binary file with particle data in different instants.
+- Part_Head.ibi4.............: Binary file with basic information of simulation data.
+- Run.csv....................: One line CSV file with execution parameters and other simulation data.
+- Run.out....................: Log file of the simulation.
+ 

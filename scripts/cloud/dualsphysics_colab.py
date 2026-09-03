@@ -7,6 +7,10 @@ import sys
 import shutil
 
 def setup_dualsphysics():
+    if os.path.exists("DesignSPHysics"):
+        print("DualSPHysics binaries already exist, skipping download.")
+        return
+        
     print("Downloading precompiled DualSPHysics Linux binaries from DesignSPHysics...")
     url = "https://github.com/DualSPHysics/DesignSPHysics/releases/download/0.5.1/release-linux.tar.gz"
     urllib.request.urlretrieve(url, "release-linux.tar.gz")
@@ -77,9 +81,9 @@ def run_stoker_validation(repo_path):
     
     # Run measuretool to extract Swl_x02. CSV will be dumped. 
     # From the bash script we saw earlier:
-    subprocess.run([measuretool, "-dirdata", data_dir, 
-                    "-pointsdef:ptels[x=0.2:0:0.2,y=0:0:0,z=0:0.02:2.1]", 
-                    "-onlytype:-all,+fluid", "-elevation", 
+    subprocess.run([measuretool, "-dirin", out_dir, 
+                    "-points", os.path.join(repo_path, "probe_points.txt"), 
+                    "-onlytype:-all,+fluid", "-height", 
                     "-savevtk", os.path.join(measuretool_out, "EtaPoints"), 
                     "-savecsv", os.path.join(out_dir, "MeasuredA")], check=True, env=ds_env)
                     
