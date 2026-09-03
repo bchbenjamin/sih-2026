@@ -58,7 +58,9 @@ def run_stoker_validation(repo_path):
     subprocess.run([gencase, xml_path_noext, os.path.join(out_dir, "CaseDambreakVal2D"), "-save:all"], check=True)
     
     print("Running DualSPHysics on CPU...")
-    subprocess.run([ds_cpu, "-cpu", os.path.join(out_dir, "CaseDambreakVal2D"), out_dir], check=True)
+    ds_env = os.environ.copy()
+    ds_env["LD_LIBRARY_PATH"] = os.path.dirname(ds_cpu) + ":" + ds_env.get("LD_LIBRARY_PATH", "")
+    subprocess.run([ds_cpu, "-cpu", os.path.join(out_dir, "CaseDambreakVal2D"), out_dir], check=True, env=ds_env)
     
     print("Running MeasureTool...")
     measuretool_out = os.path.join(out_dir, "measuretool")
@@ -70,7 +72,7 @@ def run_stoker_validation(repo_path):
                     "-pointsdef:ptels[x=0.2:0:0.2,y=0:0:0,z=0:0.02:2.1]", 
                     "-onlytype:-all,+fluid", "-elevation", 
                     "-savevtk", os.path.join(measuretool_out, "EtaPoints"), 
-                    "-savecsv", os.path.join(out_dir, "MeasuredA")], check=True)
+                    "-savecsv", os.path.join(out_dir, "MeasuredA")], check=True, env=ds_env)
                     
     # The output CSV is likely MeasuredA.csv. Wait, the stoker_validation.py wants --model stoker_model_output.csv
     shutil.copy(os.path.join(out_dir, "MeasuredA.csv"), os.path.join(out_dir, "stoker_model_output.csv"))
