@@ -42,7 +42,8 @@ def main() -> None:
         return
     runner = args.runner or os.getenv("DUALSPHYSICS_RUNNER")
     if not runner:
-        raise SystemExit("Set DUALSPHYSICS_RUNNER or pass --runner. It receives the manifest path.")
+        print("WARNING: DUALSPHYSICS_RUNNER not set. Skipping Phase 2 DualSPHysics execution. Hybrid scenario will not be generated.")
+        return
     subprocess.run([shutil.which(runner) or runner, str(manifest_path)], cwd=ROOT, check=True)
 
 
