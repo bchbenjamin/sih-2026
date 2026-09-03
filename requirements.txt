@@ -4,7 +4,8 @@ PyYAML>=6.0
 rasterio>=1.3
 shapely>=2.0
 requests>=2.31
+pyproj>=3.6
 
 # Optional backends (install only on the appropriate worker)
-# anuga
+# anuga  # install on the notebook worker selected for the far-field solve
 # geopandas

@@ -3,11 +3,10 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-preview_flag=""
-if [[ "${1:-}" == "--preview-legacy" ]]; then
-  preview_flag="--allow-unverified"
+if [[ "${1:-}" == "--mantaflow" || "${2:-}" == "--mantaflow" ]]; then
+  export DAM_VISUAL_MODE=mantaflow
 fi
 
-python3 "$repo_root/scripts/phase6/prepare_viz_data.py" $preview_flag
+python3 "$repo_root/scripts/phase6/prepare_viz_data.py"
 blender_bin="${BLENDER_BIN:-blender}"
 "$blender_bin" --background --python "$repo_root/scripts/phase6/build_blender_scene.py"

@@ -2,6 +2,6 @@
 # a site-specific value that has been reviewed by a qualified modeller.
 # These values are intentionally null: they are not Rishiganga measurements.
 erodibility: medium
-breach_width_m:
-breach_time_s:
+breach_width_m: null
+breach_time_s: null
 citation: "Author, year, report/table/figure or calibrated-model run identifier"

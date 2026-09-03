@@ -38,7 +38,7 @@ downstream_points:
 
 execution:
   nearfield_backend: dualsphysics
-  farfield_backend: delft3d_fm
-  delft3d_timebox_days: 3
+  farfield_backend: anuga  # free-tier default; use Delft3D FM only within the one-day time-box
+  delft3d_timebox_days: 1
   model_scale_Lr: 40.0
   crs: EPSG:4326

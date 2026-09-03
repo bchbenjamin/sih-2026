@@ -81,8 +81,10 @@ def main() -> None:
         raise
     temporary.replace(output)
     (output.parent / "dem_metadata.json").write_text(json.dumps({
-        "source": "OpenTopography SRTMGL1", "url": response.url,
-        "bbox": [west, south, east, north], "crs": "EPSG:4326",
+        "source": "OpenTopography SRTMGL1",
+        "request": {"endpoint": url, "demtype": "SRTMGL1",
+                    "bbox": [west, south, east, north], "output_format": "GTiff"},
+        "crs": "EPSG:4326", "credential_redacted": True,
     }, indent=2) + "\n")
     print(f"Downloaded validated EPSG:4326 DEM to {output}")
 

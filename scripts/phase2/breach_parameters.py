@@ -18,6 +18,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 ERODIBILITY = {"high": 1.236, "medium": -0.380, "low": -1.615}
+PLACEHOLDER_CITATIONS = {"", "your source / report / calibration id", "todo", "tbd", "unknown", "n/a"}
 
 
 def peng_zhang_peak_discharge(volume_m3: float, dam_height_m: float, erodibility: str) -> float:
@@ -52,7 +53,9 @@ def main() -> None:
     selected = {"peak_discharge_m3s": q_peak,
                 "breach_width_m": calibration.get("breach_width_m"),
                 "breach_time_s": calibration.get("breach_time_s")}
-    ready = all(value is not None for value in selected.values()) and bool(calibration.get("citation"))
+    citation = str(calibration.get("citation", "")).strip()
+    ready = (all(value is not None for value in selected.values())
+             and citation.casefold() not in PLACEHOLDER_CITATIONS)
     report = {
         "case_name": config["case_name"],
         "status": "READY_FOR_SOLVER" if ready else "NEEDS_CALIBRATION",

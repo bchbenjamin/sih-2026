@@ -39,9 +39,11 @@ def mesh_object(name, vertices, faces, material_value):
     return object_value
 
 
-def grid_vertices(values, scale):
+def grid_vertices(values, scale, x_cell_m, y_cell_m):
     rows, cols = values.shape
-    return [((column - (cols - 1) / 2) * scale, (row - (rows - 1) / 2) * scale, values[row, column] / scale)
+    return [((column - (cols - 1) / 2) * x_cell_m / scale,
+             (row - (rows - 1) / 2) * y_cell_m / scale,
+             values[row, column] / scale)
             for row in range(rows) for column in range(cols)]
 
 
@@ -50,13 +52,14 @@ def terrain_faces(rows, cols):
             for row in range(rows - 1) for column in range(cols - 1)]
 
 
-def water_mesh(terrain, depth, arrival, elapsed, scale):
+def water_mesh(terrain, depth, arrival, elapsed, scale, x_cell_m, y_cell_m):
     wet = (depth > 0) & np.isfinite(arrival) & (arrival <= elapsed)
     rows, cols = terrain.shape
     index, vertices = {}, []
     for row, column in zip(*np.where(wet)):
         index[(row, column)] = len(vertices)
-        vertices.append(((column - (cols - 1) / 2) * scale, (row - (rows - 1) / 2) * scale,
+        vertices.append(((column - (cols - 1) / 2) * x_cell_m / scale,
+                         (row - (rows - 1) / 2) * y_cell_m / scale,
                          (terrain[row, column] + depth[row, column]) / scale))
     faces = []
     for row in range(rows - 1):
@@ -74,6 +77,22 @@ def key_visibility(obj, frame, visible):
     obj.keyframe_insert(data_path="hide_viewport", frame=frame)
 
 
+def import_nearfield_sequence(sequence_dir, water_material, frames):
+    """Import real IsoSurface OBJ frames, if DualSPHysics produced them."""
+    obj_paths = sorted(sequence_dir.glob("frame_*.obj"))
+    for frame, path in enumerate(obj_paths[:frames], start=1):
+        try:
+            bpy.ops.wm.obj_import(filepath=str(path))
+        except AttributeError:
+            bpy.ops.import_scene.obj(filepath=str(path))
+        obj = bpy.context.selected_objects[-1]
+        obj.name = f"NearFieldSPH_{frame:04d}"
+        obj.data.materials.clear()
+        obj.data.materials.append(water_material)
+        for other in range(1, frames + 1):
+            key_visibility(obj, other, other == frame)
+
+
 def main():
     # Keep Blender free of PyYAML: pass DAM_CASE_NAME for a non-default case.
     case = os.environ.get("DAM_CASE_NAME", "rishiganga")
@@ -87,18 +106,24 @@ def main():
     scale, frames = metadata["scene_scale_m_per_unit"], metadata["frames"]
     for obj in list(bpy.data.objects):
         bpy.data.objects.remove(obj, do_unlink=True)
+    x_cell_m, y_cell_m = metadata["x_cell_m"], metadata["y_cell_m"]
     terrain_material = material("Terrain", (0.13, 0.22, 0.08), roughness=0.95)
     water_material = material("Flood water", (0.02, 0.16, 0.52), metallic=0.15, roughness=0.18, alpha=0.72)
-    mesh_object("Terrain", grid_vertices(terrain, scale), terrain_faces(*terrain.shape), terrain_material)
+    terrain_object = mesh_object("Terrain", grid_vertices(terrain, scale, x_cell_m, y_cell_m), terrain_faces(*terrain.shape), terrain_material)
+    terrain_object["raster_shape"] = list(terrain.shape)
+    terrain_object["scene_size_x"] = (terrain.shape[1] - 1) * x_cell_m / scale
+    terrain_object["scene_size_y"] = (terrain.shape[0] - 1) * y_cell_m / scale
+    terrain_object["terrain_role"] = "Mantaflow effector when DAM_VISUAL_MODE=mantaflow"
     duration = metadata["simulation_duration_s"]
     for frame in range(1, frames + 1):
         elapsed = duration * (frame - 1) / (frames - 1)
-        vertices, faces = water_mesh(terrain, depth, arrival, elapsed, scale)
+        vertices, faces = water_mesh(terrain, depth, arrival, elapsed, scale, x_cell_m, y_cell_m)
         if not faces:
             continue
         water = mesh_object(f"Flood_{frame:04d}", vertices, faces, water_material)
         for other in range(1, frames + 1):
             key_visibility(water, other, other == frame)
+    import_nearfield_sequence(ROOT / "output" / case / "blender_mesh_sequence", water_material, frames)
     bounds = metadata["bounds"]
     lon_mid, lat_mid = (bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2
     building_materials = {"none": material("Building intact", (0.55, 0.55, 0.52)),
@@ -107,16 +132,34 @@ def main():
                           "severe": material("Building severe", (0.55, 0.03, 0.02))}
     for building in json.loads((viz / "buildings.json").read_text()):
         x = (building["lon"] - lon_mid) * 111_320 * math.cos(math.radians(lat_mid)) / scale
-        y = (building["lat"] - lat_mid) * 111_320 / scale
-        row, col = min(max(round((y / scale) + (terrain.shape[0] - 1) / 2), 0), terrain.shape[0] - 1), min(max(round((x / scale) + (terrain.shape[1] - 1) / 2), 0), terrain.shape[1] - 1)
+        y = (lat_mid - building["lat"]) * 111_320 / scale
+        row = min(max(round((y * scale / y_cell_m) + (terrain.shape[0] - 1) / 2), 0), terrain.shape[0] - 1)
+        col = min(max(round((x * scale / x_cell_m) + (terrain.shape[1] - 1) / 2), 0), terrain.shape[1] - 1)
         bpy.ops.mesh.primitive_cube_add(size=1, location=(x, y, terrain[row, col] / scale + 0.5))
         building_object = bpy.context.object
         building_object.name = f"Building_{building['id']}"
         building_object.dimensions = (0.7, 0.7, 1.0)
-        building_object.data.materials.append(building_materials.get(building["damage_class"], building_materials["none"]))
+        damage_class = building["damage_class"]
+        target = building_materials.get(damage_class, building_materials["none"])
+        if damage_class != "none" and building.get("arrival_time_s"):
+            animated = target.copy()
+            animated.name = f"{target.name}_{building['id']}"
+            shader = animated.node_tree.nodes.get("Principled BSDF")
+            shader.inputs["Base Color"].default_value = (0.55, 0.55, 0.52, 1)
+            shader.inputs["Base Color"].keyframe_insert(data_path="default_value", frame=1)
+            try:
+                arrival_frame = max(1, min(frames, round(float(building["arrival_time_s"]) / duration * frames)))
+            except ValueError:
+                arrival_frame = frames
+            shader.inputs["Base Color"].default_value = target.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value
+            shader.inputs["Base Color"].keyframe_insert(data_path="default_value", frame=arrival_frame)
+            building_object.data.materials.append(animated)
+        else:
+            building_object.data.materials.append(target)
     bpy.ops.object.light_add(type="SUN", location=(0, 0, 100))
     bpy.context.object.rotation_euler = (math.radians(25), math.radians(-20), math.radians(25))
-    bpy.ops.object.camera_add(location=(0, -max(terrain.shape) * scale * 0.9, max(terrain.shape) * scale * 0.65))
+    scene_span = max(terrain_object["scene_size_x"], terrain_object["scene_size_y"])
+    bpy.ops.object.camera_add(location=(0, -scene_span * 1.3, scene_span * 0.9))
     camera = bpy.context.object
     bpy.context.scene.camera = camera
     camera.data.lens = 40
@@ -133,6 +176,21 @@ def main():
     scene.render.resolution_percentage = 60
     scene["input_verification"] = metadata["input_verification"]
     scene["water_source"] = metadata["water_source"]
+    scene["coordinate_origin"] = "Local false origin at raster centre; never raw latitude/longitude Blender coordinates."
+    if os.environ.get("DAM_VISUAL_MODE", "raster").casefold() == "mantaflow":
+        # Ensure local script directories are on sys.path so Blender's bundled
+        # Python can import repository modules when invoked with `--python`.
+        import sys
+        script_dir = Path(__file__).resolve().parent
+        repo_root = script_dir.parents[2]
+        sys.path.insert(0, str(script_dir))
+        sys.path.insert(0, str(repo_root))
+        from mantaflow_scene import setup as setup_mantaflow
+        hydrograph_path = ROOT / "output" / case / "hydrograph.csv"
+        if not hydrograph_path.exists():
+            raise RuntimeError(f"Mantaflow visual mode requires {hydrograph_path}")
+        setup_mantaflow(terrain_object, hydrograph_path, scale, duration)
+        scene["mantaflow_note"] = "Presentation only; raster output remains the hydrodynamic source of truth."
     destination = ROOT / "output" / case / "dam_inundation_visualization.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(destination))
     print(f"Saved {destination}")

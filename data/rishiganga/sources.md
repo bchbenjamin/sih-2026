@@ -29,6 +29,21 @@ No output from this repository may be described as an observed-event replay.
   downstream hydropower exposure; not a source measurement.
 * `dem_bbox` — project processing extent around the study reach, not a source
   measurement.
+* `downstream_points` — the named assets/exposure locations are supported by
+  NDMA (2022), Figure 28, and the Geological Survey of India/PIB release of 28
+  June 2021, both of which identify Raini, Rishiganga HEP and Tapovan
+  Vishnugad HEP in the affected corridor. The decimal coordinate pairs and
+  `distance_km` fields are **project digitisation/chainage estimates** and not
+  published surveyed coordinates; replace them with surveyed/OSM-derived
+  coordinates and record the feature IDs before using them as validation
+  points.
+* `execution.model_scale_Lr: 40` — project-selected Froude model scale within
+  the plan's stated 1:20–1:50 range; it is a model decision, not a field
+  measurement. `Vr`, `Tr`, and `Qr` are derived in `scale_config.yaml` through
+  Froude similarity.
+* `execution.delft3d_timebox_days: 1` — project scheduling decision for the
+  Colab/Kaggle workflow, not a physical value. `execution.farfield_backend:
+  anuga` is the selected free-tier backend.
 
 ## Full references
 
@@ -47,6 +62,8 @@ No output from this repository may be described as an observed-event replay.
    discharge of floods caused by failure of natural and constructed earthen
    dams,” *Water Resources Research*, 33(10), 2337–2348,
    doi:10.1029/97WR01616.
+6. Press Information Bureau / Geological Survey of India (2021), “GSI Brings
+   to Light the Causes of the Chamoli Disaster,” 28 June 2021.
 
 `breach_params.json` records its formula/equation source, input values,
 assumptions, and calibration choice separately. Do not promote a provisional

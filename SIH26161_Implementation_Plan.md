@@ -13,6 +13,29 @@ This document is written for agentic AI coding assistants to execute directly. E
 
 ---
 
+## Session Handoff / Context for Agents (read this before writing any code)
+
+**This is a continuation of existing work, not a fresh start.** Repo/scene files from a prior agent session already exist. Before producing anything new:
+1. Audit every file against the Data Contract Summary table at the end of this document. For each expected file, report: exists / missing / exists-but-looks-like-a-placeholder.
+2. Do not trust a prior agent's numeric outputs at face value, even if the file exists and looks populated — a prior run on this project produced a Blender animation with a physically implausible vertical "spike" instead of a graded flood surge, most likely from a raw m³/s discharge value being fed into Mantaflow's flow-rate parameter without unit/scale conversion. Treat every number currently in `case_config.yaml`, `hydrograph.csv`, and any breach-parameter output as unverified until traced back to its source.
+
+**Mandatory sourcing discipline (this was missing before, and it's why the last run couldn't be checked):** every numeric value written into `case_config.yaml` must be traceable to an actual citation, not silently computed or approximated by the agent. For each value, write a companion `/data/{case_name}/sources.md` with the format `field_name: value — source (paper/report title, table/figure reference)`. If a value cannot be sourced, use a formula from Phase 2.2 and label it explicitly as "derived via [formula name], not directly published," rather than presenting it as a sourced figure.
+
+**Concrete sources for the Rishiganga case, so the agent doesn't need to re-search:**
+- Shugar et al., 2021, *Science* — "A massive rock and ice avalanche caused the 2021 disaster at Chamoli, Indian Himalaya." Primary source for pre/post-event satellite-derived geometry and DEM differencing; check supplementary materials for elevation-change data.
+- NDMA Joint Study Team report — "Detailed Report: Uttarakhand Disaster on 7th February 2021." Official ground-truthed impact and geomorphological assessment.
+- ScienceDirect paper documenting the moraine-dammed lake geometry: ~700–800 m length, ~100 m front width, ~46 m depth — use these three figures directly for `lake_length_m`, `lake_front_width_m`, `lake_depth_m` in `case_config.yaml`, with this citation in `sources.md`.
+
+**Blender-specific failure modes already encountered — bake these into Phase 6 explicitly, do not let the agent skip them:**
+1. **Unit/scale mismatch causing a spike artifact.** The `hydrograph.csv` discharge values are real-world m³/s. There must be an explicit, documented conversion step between that CSV and whatever units Mantaflow's inflow object actually expects at the scene's working scale — write the conversion factor into code comments, do not feed the raw number in directly.
+2. **Terrain not set as a collision/effector object.** The BlenderGIS terrain mesh must be explicitly configured as an effector for the Mantaflow domain, or water has nothing to flow across.
+3. **Geometry disappearing when the viewport is zoomed out.** This is a BlenderGIS large-coordinate clipping issue, not a simulation limitation. Fix: (a) confirm BlenderGIS imports using a local/false origin near (0,0,0) rather than raw absolute lat/lon-derived coordinates, and (b) increase both the viewport Clip End (View tab) and the camera object's own Clip End to comfortably exceed the terrain's full extent.
+4. **Mandatory smoke test before touching real terrain or real hydrograph data.** Build a small synthetic flat-plane test domain with a hand-picked, obviously-reasonable inflow rate first. Confirm water visibly flows and pools across the plane, does not spike vertically, and does not disappear on zoom-out. Only proceed to the real Rishiganga terrain and hydrograph after this test passes cleanly.
+
+**Animation scope, confirmed for this project:** the Blender render should run from an intact first frame (dam/lake pre-breach) through the breach/surge/destruction sequence, ending on a held aftermath frame (post-event state, flooded or not, whatever the simulation actually produces) — it does not need to animate through full drainage. **This scoping applies to the Blender render only.** The underlying Phase 2–5 compute (DualSPHysics, Delft3D/ANUGA, damage analysis, comparison module) must still run across the full physical hydrograph time range regardless of the shorter render window — do not let the agent truncate the compute to match the visual.
+
+---
+
 ## Phase 0 — Case Study Selection (blocking, do first)
 
 **Recommendation: use a natural (landslide/moraine) dam, not an engineered one.** The PS's own Background section opens with natural dam/lake formations by name — Rishi Ganga (Feb 2021), Wapriyang (Nov 2021), Phuktal near Sumdo (Mar 2015) — before it even mentions engineered dams. Using one of the PS's own named examples is a genuine point in your favor with an evaluator who reads closely.
@@ -229,12 +252,40 @@ Rough shape: a GEE script/app that pulls near-real-time satellite imagery (e.g. 
 
 ---
 
-## Phase 8 — Infrastructure (AWS)
+## Phase 8 — Infrastructure (Free-tier GPU notebooks — AWS EC2 dropped)
 
-- **GPU instance** (CUDA-capable) for Phase 2 (DualSPHysics).
-- **CPU instance** (multi-core, for the far-field solve) for Phase 3, sized larger if going the Delft3D FM kernel-build route.
-- Evaluate **Inductiva.AI** as a possible managed shortcut for Phase 2 specifically — it already automates cloud GPU execution of DualSPHysics plus VTK→OBJ (Splashsurf) conversion for Blender, which could save real setup time versus standing up the GPU pipeline from scratch. Worth a quick spike before committing either way.
-- Blender rendering (Phase 6) can run on a separate instance or locally, depending on team hardware — it's the least infrastructure-sensitive phase.
+AWS EC2 was the original plan, but new-account GPU instance quota requests can take 1-2 days to approve, which is an unacceptable blocker on a hackathon timeline. **Use Colab free tier as primary, Kaggle Notebooks as backup.**
+
+### 8.1 Real constraints, plan around these
+- Colab free sessions cap at ~12 hours and disconnect after ~90 minutes idle. Nothing survives a session end unless explicitly saved elsewhere.
+- GPU is not guaranteed on the free tier — under heavy demand you may get a CPU-only runtime with no GPU at all. Have Kaggle ready as a same-day fallback for this.
+- No sudo/install persistence — every session is a fresh container. Cache anything expensive to rebuild (compiled binaries) to Drive.
+
+### 8.2 Persistence: Google Drive as the S3-equivalent
+Mount Drive at the start of every session and treat it as durable storage for the repo, DEM data, particle output, and any compiled binaries:
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+!nvidia-smi        # confirm GPU actually assigned this session, not just requested
+!git clone https://github.com/bchbenjamin/sih-2026.git /content/drive/MyDrive/sih-2026
+```
+
+### 8.3 DualSPHysics on Colab
+DualSPHysics distributes precompiled Linux binaries (dual.sphysics.org/downloads) — download and try that first:
+```python
+!wget <precompiled Linux GPU binary URL from dual.sphysics.org/downloads>
+!chmod +x DualSPHysics5.x_linux64
+```
+If it fails to run (glibc/gcc version mismatch between Colab's Ubuntu and the binary's build environment is a real possibility), fall back to building from source using DualSPHysics's own Makefile (clone the repo, set `DIRTOOLKIT` to Colab's CUDA path, `make`) — Colab ships `nvcc` by default. Either way, **cache the resulting binary to Drive** so it doesn't need to be re-downloaded or rebuilt every session.
+
+### 8.4 Delft3D FM vs ANUGA — reconsidered given free-tier constraints
+A from-source Delft3D FM build fighting session ephemerality on top of everything else is a lot of friction for a free-tier workflow. **Shorten the original Phase 3.1 time-box, or default to ANUGA outright** rather than treating it as a last-resort fallback — ANUGA is pure Python (`pip install anuga`), trivially survives a session reset with no rebuild step, and fits the free-tier reality far better than a kernel that needs compiling from source each time storage isn't guaranteed to persist cleanly.
+
+### 8.5 Blender on Colab
+Install via apt or a precompiled tarball, run headless the same way as originally planned (`blender --background --python scripts/phase6/build_blender_scene.py`). Cycles GPU rendering (CUDA/OptiX) should work headless on Colab's T4. Eevee's OpenGL/EGL headless requirement is uncertain in Colab's container specifically — **test with a trivial scene early**, same principle as the mandatory flat-plane smoke test in the Session Handoff section above, before relying on it for a real bake.
+
+### 8.6 Kaggle Notebooks as backup
+Same general workflow as Colab (free GPU, no card required), but with a more predictable weekly GPU quota (~30 hrs/week) rather than Colab's variable allocation. Keep this ready specifically for days Colab won't grant a GPU at all — don't wait until you're blocked to set up a Kaggle account.
 
 ---
 
