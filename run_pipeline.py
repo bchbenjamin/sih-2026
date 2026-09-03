@@ -48,7 +48,7 @@ def main() -> None:
     selected_phases = [args.phase] if args.phase is not None else list(phases)
     for phase in selected_phases:
         if phase == 6:
-            call("scripts/phase6/prepare_viz_data.py")
+            call("scripts/phase6/prepare_viz_data.py", "--resolution", "128")
             environment = os.environ.copy()
             environment["DAM_VISUAL_MODE"] = args.visual_mode
             subprocess.run([args.blender_bin, "--background", "--python",
