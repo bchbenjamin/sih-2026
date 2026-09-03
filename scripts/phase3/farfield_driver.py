@@ -38,7 +38,26 @@ def main() -> None:
             if required == hydrograph and args.scenario == "hybrid":
                 print(f"WARNING: Hybrid hydrograph missing ({required}). Skipping hybrid farfield execution.")
                 return
-            raise SystemExit(f"Missing required input: {required}")
+            elif required == hydrograph and args.scenario == "standalone":
+                # Synthesize the standalone formula hydrograph (triangular) from breach_params.json
+                print(f"Synthesizing missing standalone hydrograph at {hydrograph}...")
+                params_path = root_output / "breach_params.json"
+                if not params_path.exists():
+                    raise SystemExit(f"Cannot synthesize hydrograph: missing {params_path}")
+                params = json.loads(params_path.read_text())
+                q_peak = params["primary_method"]["peak_discharge_m3s"]
+                volume = params["primary_method"]["inputs"]["lake_volume_m3"]
+                t_peak = params["selected_parameters"]["breach_time_s"]
+                # Triangular hydrograph: Area = 1/2 * base * Qp = Volume => base = 2 * Volume / Qp
+                base_time = 2.0 * volume / q_peak
+                hydrograph.parent.mkdir(parents=True, exist_ok=True)
+                with open(hydrograph, 'w') as f:
+                    f.write("time_s,discharge_m3s\n")
+                    f.write(f"0.0,0.0\n")
+                    f.write(f"{t_peak},{q_peak}\n")
+                    f.write(f"{base_time},0.0\n")
+            else:
+                raise SystemExit(f"Missing required input: {required}")
     if dem.exists():
         with rasterio.open(dem) as dataset:
             if dataset.crs is None or dataset.crs.to_epsg() != 4326:
