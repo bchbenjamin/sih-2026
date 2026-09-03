@@ -20,8 +20,21 @@ def setup_dualsphysics():
     print("DualSPHysics binaries downloaded.")
 
 def clone_repo():
-    repo_path = str(Path(__file__).resolve().parents[2])
-    print(f"Using local repository at: {repo_path}")
+    # If the case file exists locally, we are running from the repo root
+    if os.path.exists("cases/stoker/CaseDambreakVal2D_Def.xml"):
+        print("Running from local repository root.")
+        return os.getcwd()
+    
+    # Otherwise (e.g. in Colab), clone the repo to the current directory
+    repo_url = "https://github.com/bchbenjamin/sih-2026.git"
+    repo_path = os.path.join(os.getcwd(), "Dam_Inundation")
+    if not os.path.exists(repo_path):
+        print(f"Cloning repo from {repo_url}...")
+        subprocess.run(["git", "clone", repo_url, repo_path], check=True)
+    else:
+        print("Repo already exists, pulling latest...")
+        subprocess.run(["git", "pull"], cwd=repo_path, check=True)
+        
     return repo_path
 
 def run_stoker_validation(repo_path):
