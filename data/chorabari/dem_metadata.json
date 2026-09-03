@@ -1,0 +1,16 @@
+{
+  "source": "OpenTopography SRTMGL1",
+  "request": {
+    "endpoint": "https://portal.opentopography.org/API/globaldem",
+    "demtype": "SRTMGL1",
+    "bbox": [
+      79.0,
+      30.65,
+      79.1,
+      30.8
+    ],
+    "output_format": "GTiff"
+  },
+  "crs": "EPSG:4326",
+  "credential_redacted": true
+}
