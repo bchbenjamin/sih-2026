@@ -6,9 +6,22 @@ import tarfile
 import sys
 import shutil
 
+def mount_drive_if_colab():
+    try:
+        from google.colab import drive
+        print("Google Colab detected. Mounting Google Drive for persistent storage...")
+        drive.mount('/content/drive')
+        drive_path = "/content/drive/MyDrive/sih-2026_workspace"
+        os.makedirs(drive_path, exist_ok=True)
+        os.chdir(drive_path)
+        print(f"Working directory set to persistent storage: {os.getcwd()}")
+    except ImportError:
+        # Not in Colab, continue as normal
+        pass
+
 def setup_dualsphysics():
     if os.path.exists("DesignSPHysics"):
-        print("DualSPHysics binaries already exist, skipping download.")
+        print("DualSPHysics binaries already exist in persistent storage, skipping download.")
         return
         
     print("Downloading precompiled DualSPHysics Linux binaries from DesignSPHysics...")
@@ -21,7 +34,7 @@ def setup_dualsphysics():
         
     print("Setting permissions...")
     subprocess.run("find DesignSPHysics -type f -exec chmod +x {} \\;", shell=True)
-    print("DualSPHysics binaries downloaded.")
+    print("DualSPHysics binaries downloaded and cached.")
 
 def clone_repo():
     # If the case file exists locally, we are running from the repo root
@@ -98,6 +111,7 @@ def run_stoker_validation(repo_path):
                     "--t-min", "0.1", "--t-max", "0.2"], check=True)
 
 if __name__ == "__main__":
+    mount_drive_if_colab()
     setup_dualsphysics()
     repo_path = clone_repo()
     run_stoker_validation(repo_path)

@@ -13,8 +13,15 @@ ROOT = Path(__file__).resolve().parents[2]
 def main() -> None:
     case = yaml.safe_load((ROOT / "case_config.yaml").read_text())["case_name"]
     hybrid, standalone = ROOT / "output" / case, ROOT / "output" / case / "standalone"
-    run(hybrid, hybrid / "damage.csv")
-    run(standalone, standalone / "damage.csv")
+    if (hybrid / "farfield_depth.tif").exists():
+        run(hybrid, hybrid / "damage.csv")
+    else:
+        print(f"Skipping hybrid damage analysis: {hybrid / 'farfield_depth.tif'} not found.")
+    
+    if (standalone / "farfield_depth.tif").exists():
+        run(standalone, standalone / "damage.csv")
+    else:
+        print(f"Skipping standalone damage analysis: {standalone / 'farfield_depth.tif'} not found.")
 
 
 if __name__ == "__main__":

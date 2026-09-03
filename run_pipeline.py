@@ -50,7 +50,13 @@ def main() -> None:
         if phase == 6:
             call("scripts/phase6/prepare_viz_data.py", "--resolution", "128")
             environment = os.environ.copy()
+            
+            # Get case name from case_config.yaml to pass to Blender
+            import yaml
+            case = yaml.safe_load((ROOT / "case_config.yaml").read_text())["case_name"]
+            environment["DAM_CASE_NAME"] = case
             environment["DAM_VISUAL_MODE"] = args.visual_mode
+            
             subprocess.run([args.blender_bin, "--background", "--python",
                             str(ROOT / "scripts/phase6/build_blender_scene.py")],
                            cwd=ROOT, env=environment, check=True)

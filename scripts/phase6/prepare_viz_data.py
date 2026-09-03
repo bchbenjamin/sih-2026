@@ -49,7 +49,12 @@ def main() -> None:
     config = yaml.safe_load((ROOT / "case_config.yaml").read_text())
     case = config["case_name"]
     data, output = ROOT / "data" / case, ROOT / "output" / case
-    dem_path, depth_path, arrival_path = data / "dem.tif", output / "farfield_depth.tif", output / "farfield_arrival.tif"
+    depth_path = output / "farfield_depth.tif"
+    arrival_path = output / "farfield_arrival.tif"
+    if not depth_path.exists() and (output / "standalone" / "farfield_depth.tif").exists():
+        depth_path = output / "standalone" / "farfield_depth.tif"
+        arrival_path = output / "standalone" / "farfield_arrival.tif"
+    dem_path = data / "dem.tif"
     for path in (dem_path, depth_path, arrival_path):
         if not path.exists():
             raise SystemExit(f"Missing visualisation input: {path}")

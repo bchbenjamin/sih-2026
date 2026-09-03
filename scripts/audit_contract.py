@@ -58,18 +58,22 @@ def main() -> None:
     config = yaml.safe_load(config_path.read_text())
     case = config["case_name"]
     data, output = ROOT / "data" / case, ROOT / "output" / case
+    def output_path(filename: str) -> Path:
+        p = output / filename
+        return p if p.exists() else output / "standalone" / filename
+
     report = {
         "case_config.yaml": file_status(config_path),
         f"data/{case}/sources.md": file_status(data / "sources.md", 200),
         f"data/{case}/dem.tif": provenance_status(data / "dem.tif", data / "dem_metadata.json"),
         f"data/{case}/buildings.geojson": provenance_status(data / "buildings.geojson", data / "buildings_metadata.json", 100),
         f"data/{case}/landuse.geojson": provenance_status(data / "landuse.geojson", data / "landuse_metadata.json", 100),
-        f"output/{case}/hydrograph.csv": provenance_status(output / "hydrograph.csv", output / "dualsphysics_run_metadata.json", 40),
+        f"output/{case}/hydrograph.csv": provenance_status(output_path("hydrograph.csv"), output_path("dualsphysics_run_metadata.json") if (output / "hydrograph.csv").exists() else output / "breach_params.json", 40),
         f"output/{case}/scale_config.yaml": file_status(output / "scale_config.yaml", 40),
-        f"output/{case}/farfield_depth.tif": farfield_status(output / "farfield_depth.tif", output / "solver_used.txt"),
-        f"output/{case}/farfield_velocity.tif": farfield_status(output / "farfield_velocity.tif", output / "solver_used.txt"),
-        f"output/{case}/farfield_arrival.tif": farfield_status(output / "farfield_arrival.tif", output / "solver_used.txt"),
-        f"output/{case}/damage.csv": file_status(output / "damage.csv", 40),
+        f"output/{case}/farfield_depth.tif": farfield_status(output_path("farfield_depth.tif"), output_path("solver_used.txt")),
+        f"output/{case}/farfield_velocity.tif": farfield_status(output_path("farfield_velocity.tif"), output_path("solver_used.txt")),
+        f"output/{case}/farfield_arrival.tif": farfield_status(output_path("farfield_arrival.tif"), output_path("solver_used.txt")),
+        f"output/{case}/damage.csv": file_status(output_path("damage.csv"), 40),
         f"output/{case}/comparison_report.json": file_status(output / "comparison_report.json", 40),
     }
     print(json.dumps(report, indent=2))
