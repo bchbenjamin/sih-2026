@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import csv
 import math
+import os
+from pathlib import Path
 
 def generate_reference():
     H0 = 2.0
@@ -13,7 +15,11 @@ def generate_reference():
     
     t_arrival = -x_prime / c0 if x_prime < 0 else 0.0
     
-    with open('cases/stoker/stoker_analytical_reference.csv', 'w', newline='') as f:
+    out_dir = Path(__file__).resolve().parents[2] / "cases" / "stoker"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / "stoker_analytical_reference.csv"
+    
+    with open(out_path, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['time_s', 'wave_height_m'])
         
