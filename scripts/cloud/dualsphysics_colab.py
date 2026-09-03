@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import subprocess
 import urllib.request
 import tarfile
@@ -19,14 +20,8 @@ def setup_dualsphysics():
     print("DualSPHysics binaries downloaded.")
 
 def clone_repo():
-    repo_url = "https://github.com/bchbenjamin/sih-2026.git"
-    repo_path = "/content/Dam_Inundation"
-    if os.path.exists(repo_path):
-        print("Repo already exists, pulling latest...")
-        subprocess.run(["git", "pull"], cwd=repo_path, check=True)
-    else:
-        print(f"Cloning repo from {repo_url}...")
-        subprocess.run(["git", "clone", repo_url, repo_path], check=True)
+    repo_path = str(Path(__file__).resolve().parents[2])
+    print(f"Using local repository at: {repo_path}")
     return repo_path
 
 def run_stoker_validation(repo_path):
@@ -60,7 +55,8 @@ def run_stoker_validation(repo_path):
     print("Running DualSPHysics on CPU...")
     ds_env = os.environ.copy()
     ds_env["LD_LIBRARY_PATH"] = os.path.dirname(ds_cpu) + ":" + ds_env.get("LD_LIBRARY_PATH", "")
-    subprocess.run([ds_cpu, "-cpu", os.path.join(out_dir, "CaseDambreakVal2D"), out_dir], check=True, env=ds_env)
+    # Removed invalid -cpu flag, v4 DualSPHysics expects standard arguments
+    subprocess.run([ds_cpu, os.path.join(out_dir, "CaseDambreakVal2D"), out_dir], check=True, env=ds_env)
     
     print("Running MeasureTool...")
     measuretool_out = os.path.join(out_dir, "measuretool")
