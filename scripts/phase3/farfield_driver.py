@@ -35,6 +35,9 @@ def main() -> None:
     dem = ROOT / "data" / case / "dem.tif"
     for required in (dem, hydrograph):
         if not required.exists() and args.run:
+            if required == hydrograph and args.scenario == "hybrid":
+                print(f"WARNING: Hybrid hydrograph missing ({required}). Skipping hybrid farfield execution.")
+                return
             raise SystemExit(f"Missing required input: {required}")
     if dem.exists():
         with rasterio.open(dem) as dataset:
