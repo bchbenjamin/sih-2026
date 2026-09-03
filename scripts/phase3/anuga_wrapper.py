@@ -59,7 +59,7 @@ def main():
     
     # Read raster data for elevation
     with rasterio.open(dem_32644) as src:
-        dem_data = src.read(1)
+        dem_data = src.read(1).astype('float32')
         nodata = src.nodata
         if nodata is not None:
             dem_data[dem_data == nodata] = np.nan
