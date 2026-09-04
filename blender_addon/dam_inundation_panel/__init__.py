@@ -169,7 +169,7 @@ def run_pipeline_thread(context, root):
         
         colab_bin = root / ".venv" / "bin" / "colab"
         
-        process = subprocess.Popen([str(colab_bin), "run", "--timeout", "3600", "run_on_colab.py"], 
+        process = subprocess.Popen([str(colab_bin), "run", "--gpu", "T4", "--timeout", "3600", "run_on_colab.py"], 
                                    cwd=str(root), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in process.stdout:
             settings.status = f"Running: {line.strip()[-50:]}"
