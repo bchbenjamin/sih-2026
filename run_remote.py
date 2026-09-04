@@ -25,7 +25,7 @@ def main():
     
     # 3. Download results
     print("Downloading results...")
-    run_command([str(colab_bin), "download", "/content/output_results.tar.gz"])
+    run_command([str(colab_bin), "download", "/content/output_results.tar.gz", "output_results.tar.gz"])
     run_command(["tar", "-xzf", "output_results.tar.gz"])
     
     # 4. Trigger prepare_viz_data.py

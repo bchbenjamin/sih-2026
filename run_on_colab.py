@@ -40,6 +40,8 @@ def main():
         print("Pipeline failed!")
         sys.exit(result.returncode)
     
+    print("Tarring results...")
+    subprocess.run(["tar", "-czf", "/content/output_results.tar.gz", "-C", "/content/sih-2026", "output"])
     print("Pipeline run on Colab completed successfully!")
 
 if __name__ == "__main__":
