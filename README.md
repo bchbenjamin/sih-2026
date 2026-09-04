@@ -124,6 +124,19 @@ python3 run_pipeline.py --phase 6
 # BLENDER_BIN or install Blender to proceed.
 ```
 
+13) Blender UI Add-on
+
+A Blender add-on is included in `blender_addon/dam_inundation_panel/` that drives the entire pipeline natively from the 3D viewport. 
+To install and access it:
+1. Symlink the add-on to your Blender addons folder:
+   ```bash
+   mkdir -p ~/.config/blender/4.1/scripts/addons
+   ln -sfn $(pwd)/blender_addon/dam_inundation_panel ~/.config/blender/4.1/scripts/addons/dam_inundation_panel
+   ```
+2. Open Blender and go to **Edit > Preferences > Add-ons**. Search for **"Dam Inundation Pipeline"** and enable it.
+3. In the 3D Viewport, open the Sidebar (press **N**) and locate the **"Pipeline"** tab.
+4. From this panel, you can modify the config/calibration inputs and click **"Run Pipeline"**, which will invoke the `run_remote.py` script to dispatch to Google Colab, wait for results, and rebuild the scene automatically.
+
 Troubleshooting notes (verified while preparing this guide)
 - If `scripts/audit_contract.py --strict` fails: inspect the JSON printed by
   the script to see which artefact is `missing`, `unverified`, or a
