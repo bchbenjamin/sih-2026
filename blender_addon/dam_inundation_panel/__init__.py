@@ -75,6 +75,7 @@ class DAM_PG_Settings(bpy.types.PropertyGroup):
             ("high", "High", "")
         ]
     )
+    use_regression: bpy.props.BoolProperty(name="Derive via regression", default=False)
     breach_width_m: bpy.props.FloatProperty(name="Breach Width (m)")
     breach_time_s: bpy.props.FloatProperty(name="Breach Time (s)")
     citation: bpy.props.StringProperty(name="Citation/Source")
@@ -107,8 +108,18 @@ class DAM_OT_LoadConfig(bpy.types.Operator):
         
         b_config = load_yaml("breach_calibration.yaml")
         settings.erodibility = b_config.get("erodibility", "medium")
-        settings.breach_width_m = b_config.get("breach_width_m", 60.0)
-        settings.breach_time_s = b_config.get("breach_time_s", 750.0)
+        
+        w = b_config.get("breach_width_m")
+        t = b_config.get("breach_time_s")
+        if w is None or t is None:
+            settings.use_regression = True
+            settings.breach_width_m = 0.0
+            settings.breach_time_s = 0.0
+        else:
+            settings.use_regression = False
+            settings.breach_width_m = float(w)
+            settings.breach_time_s = float(t)
+            
         settings.citation = b_config.get("citation", "")
         
         return {'FINISHED'}
@@ -122,13 +133,15 @@ class DAM_OT_SaveConfig(bpy.types.Operator):
         
         # Validation for citation
         b_config = load_yaml("breach_calibration.yaml")
-        old_width = b_config.get("breach_width_m", 60.0)
-        old_time = b_config.get("breach_time_s", 750.0)
+        old_width = b_config.get("breach_width_m")
+        old_time = b_config.get("breach_time_s")
         
-        if (settings.breach_width_m != old_width or settings.breach_time_s != old_time):
-            if settings.citation == b_config.get("citation", ""):
-                self.report({'ERROR'}, "Must provide a new citation if breach values are changed!")
-                return {'CANCELLED'}
+        # If transitioning from regression to manual, or changing manual values
+        if not settings.use_regression:
+            if (old_width is None or old_time is None or settings.breach_width_m != old_width or settings.breach_time_s != old_time):
+                if settings.citation == b_config.get("citation", ""):
+                    self.report({'ERROR'}, "Must provide a new citation if breach values are changed manually!")
+                    return {'CANCELLED'}
         
         c_config = load_yaml("case_config.yaml")
         c_config["case_name"] = settings.case_name
@@ -137,8 +150,13 @@ class DAM_OT_SaveConfig(bpy.types.Operator):
         save_yaml("case_config.yaml", c_config)
         
         b_config["erodibility"] = settings.erodibility
-        b_config["breach_width_m"] = settings.breach_width_m
-        b_config["breach_time_s"] = settings.breach_time_s
+        if settings.use_regression:
+            b_config["breach_width_m"] = None
+            b_config["breach_time_s"] = None
+        else:
+            b_config["breach_width_m"] = settings.breach_width_m
+            b_config["breach_time_s"] = settings.breach_time_s
+            
         b_config["citation"] = settings.citation
         save_yaml("breach_calibration.yaml", b_config)
         
@@ -221,8 +239,14 @@ class DAM_PT_MainPanel(bpy.types.Panel):
         box = layout.box()
         box.label(text="Breach Calibration")
         box.prop(settings, "erodibility")
-        box.prop(settings, "breach_width_m")
-        box.prop(settings, "breach_time_s")
+        
+        box.prop(settings, "use_regression")
+        if settings.use_regression:
+            box.label(text="Derived via regression (from lake geom)", icon='INFO')
+        else:
+            box.prop(settings, "breach_width_m")
+            box.prop(settings, "breach_time_s")
+            
         box.prop(settings, "citation")
         
         layout.operator("dam.load_config", icon='FILE_REFRESH')

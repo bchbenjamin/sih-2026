@@ -1,4 +1,4 @@
-breach_time_s: 750.0
-breach_width_m: 60.0
-citation: Das et al. 2015 (width), Rafiq et al. 2019 (duration)
+breach_time_s: null
+breach_width_m: null
 erodibility: medium
+citation: ''
