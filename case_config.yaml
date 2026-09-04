@@ -1,15 +1,15 @@
 blocking_material: moraine (boulders/gravel/sand/silt)
-case_name: rishiganga_landslide_dam_2021
+case_name: Chorabari
 dam_coordinates:
-- 30.350000381469727
-- 79.7300033569336
+- 23.0
+- 13.0600004196167
 dam_name: Chorabari moraine dam
 dam_type: natural
 dem_bbox:
-- 79.68000030517578
-- 79.77999877929688
-- 30.299999237060547
-- 30.420000076293945
+- 78.0
+- 89.0
+- 34.5
+- 45.0
 dem_source: SRTM GL1 via OpenTopography (downloaded at runtime; no synthetic fallback)
 downstream_points:
 - coordinates:
