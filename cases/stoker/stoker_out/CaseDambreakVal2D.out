@@ -38,7 +38,7 @@ OmpThreads: 8
 List: MAIN
 
 Total operations: 5
-[LoadXML-End  time:0.001s]
+[LoadXML-End  time:0.002s]
 
 [Draw]
 Mk size: 1 bytes
@@ -53,7 +53,7 @@ Memory: 0.00Gb 0.24Mb (247500)
 <MAIN (Operations= 3+2+0 = 5)
 
 Triangles: 22 (0 ignored)
-[Draw-End  time:0.005s]
+[Draw-End  time:0.004s]
 
 [PreparePoints]
 Computing Vtk-Cells data...  (time:0.003s)
@@ -84,22 +84,22 @@ Speed of sound: 88.3672 max(88.3672,44.1836)
 
 Coefh:1.000000 (hdp:1.414214)
 
-[PreparePoints-End  time:0.011s]
+[PreparePoints-End  time:0.009s]
 
 [SaveCase2D]
-/mnt/WindowsDrive/Fedora/Projects/Dam_Inundation/cases/stoker/stoker_out/CaseDambreakVal2D_MkCells.vtk  (time:0.001s, shapes:4, points:16)
-CaseDambreakVal2D.bi4<double>  (time:0.008s)
+/mnt/WindowsDrive/Fedora/Projects/Dam_Inundation/cases/stoker/stoker_out/CaseDambreakVal2D_MkCells.vtk  (time:0.002s, shapes:4, points:16)
+CaseDambreakVal2D.bi4<double>  (time:0.016s)
 /mnt/WindowsDrive/Fedora/Projects/Dam_Inundation/cases/stoker/stoker_out/CaseDambreakVal2D_All.vtk  (time: 0.010s)
 /mnt/WindowsDrive/Fedora/Projects/Dam_Inundation/cases/stoker/stoker_out/CaseDambreakVal2D_Bound.vtk  (time: 0.002s)
 /mnt/WindowsDrive/Fedora/Projects/Dam_Inundation/cases/stoker/stoker_out/CaseDambreakVal2D_Fluid.vtk  (time: 0.008s)
 /mnt/WindowsDrive/Fedora/Projects/Dam_Inundation/cases/stoker/stoker_out/CaseDambreakVal2D.xml  (time:0.001s)
 
-Save files time: 0.031s
+Save files time: 0.038s
 
 Particle limits:
   X range: 0 to 4 [m]
   Y range: 0 to 0 [m]
   Z range: 0 to 3 [m]
 
-[SaveCase2D-End  time:0.035s]
+[SaveCase2D-End  time:0.043s]
 
