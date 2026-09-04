@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dam Inundation Dashboard</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Dam Breach Inundation Modeller</h1>
+            <p>Phase 5/6 Damage Assessment & Scenario Comparison</p>
+        </header>
+
+        <main>
+            <section class="metrics-panel">
+                <div class="card stat-card fade-in">
+                    <h3>Hybrid Peak Discharge</h3>
+                    <p id="hybrid-discharge" class="metric">-- m³/s</p>
+                </div>
+                <div class="card stat-card fade-in delay-1">
+                    <h3>Standalone Peak Discharge</h3>
+                    <p id="standalone-discharge" class="metric">-- m³/s</p>
+                </div>
+                <div class="card stat-card fade-in delay-2">
+                    <h3>Delta (Difference)</h3>
+                    <p id="delta-discharge" class="metric">--</p>
+                </div>
+            </section>
+
+            <div class="main-content">
+                <section class="map-section card fade-in delay-3">
+                    <div class="map-header">
+                        <h2>Inundation Impact Map</h2>
+                        <div class="export-actions">
+                            <button onclick="exportData('shp')" class="btn primary">Export .SHP</button>
+                            <button onclick="exportData('kml')" class="btn secondary">Export .KML</button>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                </section>
+
+                <section class="side-panel card fade-in delay-4">
+                    <h2>Damage Assessment</h2>
+                    <ul id="damage-list" class="damage-list">
+                        <!-- Populated by JS -->
+                    </ul>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
