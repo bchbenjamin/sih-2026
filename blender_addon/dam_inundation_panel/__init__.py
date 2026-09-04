@@ -186,9 +186,11 @@ def run_pipeline_thread(context, root):
         process.wait()
         
         if process.returncode != 0:
-            error_msg = " | ".join(last_lines)
-            settings.status = f"Failed (Code {process.returncode}): {error_msg[-40:]}"
-            print(f"PIPELINE ERROR LOG:\n{chr(10).join(last_lines)}")
+            log_path = root / "pipeline_error.log"
+            with open(log_path, "w") as f:
+                f.write(chr(10).join(last_lines))
+            settings.status = f"Failed (Code {process.returncode}). See {log_path.name}"
+            print(f"PIPELINE ERROR LOG SAVED TO:\n{log_path}")
             return
             
         settings.status = "Done!"
