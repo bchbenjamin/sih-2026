@@ -14,6 +14,7 @@ import bpy
 import yaml
 import os
 import subprocess
+import sys
 import threading
 from pathlib import Path
 
@@ -160,16 +161,8 @@ def run_pipeline_thread(context, root):
     settings = context.scene.dam_settings
     settings.status = "Running Colab pipeline..."
     
-    # 1. Colab pipeline execution
     try:
-        # Run exactly as the terminal: colab run run_on_colab.py
-        # It relies on the git repository being up to date. So we commit first!
-        subprocess.run(["git", "commit", "-am", "Auto-commit from Blender addon"], cwd=str(root))
-        subprocess.run(["git", "push"], cwd=str(root))
-        
-        colab_bin = root / ".venv" / "bin" / "colab"
-        
-        process = subprocess.Popen([str(colab_bin), "run", "--gpu", "T4", "--timeout", "3600", "run_on_colab.py"], 
+        process = subprocess.Popen([sys.executable, "run_remote.py"], 
                                    cwd=str(root), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         for line in process.stdout:
             settings.status = f"Running: {line.strip()[-50:]}"
@@ -179,19 +172,6 @@ def run_pipeline_thread(context, root):
             settings.status = "Error in colab execution!"
             return
             
-        # 2. Download results
-        settings.status = "Downloading results..."
-        subprocess.run([str(colab_bin), "download", "/content/output_results.tar.gz"], cwd=str(root))
-        subprocess.run(["tar", "-xzf", "output_results.tar.gz"], cwd=str(root))
-        
-        # 3. Trigger prepare_viz_data.py
-        settings.status = "Preparing viz data..."
-        subprocess.run(["python3", "scripts/phase6/prepare_viz_data.py"], cwd=str(root))
-        
-        # 4. Trigger Blender scene rebuild
-        settings.status = "Rebuilding Blender scene..."
-        subprocess.run(["python3", "run_pipeline.py", "--phase", "6"], cwd=str(root))
-        
         settings.status = "Done!"
         
     except Exception as e:
