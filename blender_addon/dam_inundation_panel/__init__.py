@@ -18,18 +18,9 @@ import sys
 import threading
 from pathlib import Path
 
-# Try to find repo root by walking up from the current blend file or assuming cwd
 def get_repo_root():
-    if bpy.data.filepath:
-        p = Path(bpy.data.filepath)
-        while p.parent != p:
-            if (p / "run_pipeline.py").exists():
-                return p
-            p = p.parent
-    cwd = Path(os.getcwd())
-    if (cwd / "run_pipeline.py").exists():
-        return cwd
-    return cwd
+    # Reliably find the repo root by following the symlink of this addon file
+    return Path(__file__).resolve().parent.parent.parent
 
 def load_yaml(file_name):
     root = get_repo_root()
@@ -182,12 +173,22 @@ def run_pipeline_thread(context, root):
     try:
         process = subprocess.Popen([sys.executable, "run_remote.py"], 
                                    cwd=str(root), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        
+        last_lines = []
         for line in process.stdout:
-            settings.status = f"Running: {line.strip()[-50:]}"
+            stripped = line.strip()
+            if stripped:
+                settings.status = f"Running: {stripped[-50:]}"
+                last_lines.append(stripped)
+                if len(last_lines) > 5:
+                    last_lines.pop(0)
+                    
         process.wait()
         
         if process.returncode != 0:
-            settings.status = "Error in colab execution!"
+            error_msg = " | ".join(last_lines)
+            settings.status = f"Failed (Code {process.returncode}): {error_msg[-40:]}"
+            print(f"PIPELINE ERROR LOG:\n{chr(10).join(last_lines)}")
             return
             
         settings.status = "Done!"
