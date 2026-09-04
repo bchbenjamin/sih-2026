@@ -39,7 +39,7 @@ def main() -> None:
     parser.add_argument("--calibration", type=Path,
                         help="Cited breach-calibration YAML required for a real Phase 2 run")
     parser.add_argument("--blender-bin", default=os.getenv("BLENDER_BIN", "blender"))
-    parser.add_argument("--visual-mode", choices=("raster", "mantaflow"), default="mantaflow")
+    parser.add_argument("--visual-mode", choices=("raster", "mantaflow"), default="raster")
     args = parser.parse_args()
     phases = {0: [], 1: ["scripts/phase1/run_phase1.py"],
               2: ["scripts/phase2/breach_parameters.py", "scripts/phase2/scale_config.py", "scripts/phase2/run_case.py"],

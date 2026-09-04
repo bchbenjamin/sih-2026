@@ -55,18 +55,35 @@ def terrain_faces(rows, cols):
 def water_mesh(terrain, depth, arrival, elapsed, scale, x_cell_m, y_cell_m):
     wet = (depth > 0) & np.isfinite(arrival) & (arrival <= elapsed)
     rows, cols = terrain.shape
-    index, vertices = {}, []
-    for row, column in zip(*np.where(wet)):
-        index[(row, column)] = len(vertices)
-        vertices.append(((column - (cols - 1) / 2) * x_cell_m / scale,
-                         (row - (rows - 1) / 2) * y_cell_m / scale,
-                         (terrain[row, column] + depth[row, column]) / scale))
+    vertices = []
     faces = []
-    for row in range(rows - 1):
-        for column in range(cols - 1):
-            corners = [(row, column), (row, column + 1), (row + 1, column + 1), (row + 1, column)]
-            if all(corner in index for corner in corners):
-                faces.append(tuple(index[corner] for corner in corners))
+    
+    vertex_index = np.full((rows + 1, cols + 1), -1, dtype=np.int32)
+    
+    for r in range(rows):
+        for c in range(cols):
+            if wet[r, c]:
+                corners = [(r, c), (r, c+1), (r+1, c+1), (r+1, c)]
+                face = []
+                for cr, cc in corners:
+                    if vertex_index[cr, cc] == -1:
+                        vertex_index[cr, cc] = len(vertices)
+                        x = (cc - 0.5 - (cols - 1) / 2) * x_cell_m / scale
+                        y = (cr - 0.5 - (rows - 1) / 2) * y_cell_m / scale
+                        
+                        z_sum = 0
+                        z_count = 0
+                        for dr, dc in [(-1, -1), (-1, 0), (0, -1), (0, 0)]:
+                            nr, nc = cr + dr, cc + dc
+                            if 0 <= nr < rows and 0 <= nc < cols and wet[nr, nc]:
+                                z_sum += (terrain[nr, nc] + depth[nr, nc]) / scale
+                                z_count += 1
+                        z = z_sum / z_count if z_count > 0 else 0
+                        
+                        vertices.append((x, y, z))
+                    face.append(vertex_index[cr, cc])
+                faces.append(tuple(face))
+                
     return vertices, faces
 
 
