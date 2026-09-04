@@ -92,18 +92,30 @@ def main() -> None:
         terrain[terrain == nodata] = np.nan
     if not np.isfinite(terrain).all():
         raise SystemExit("DEM has no-data cells after resampling; supply a filled DEM for Blender.")
-    depth = np.zeros_like(terrain)
-    arrival = np.full_like(terrain, np.nan)
+    # Two-pass depth reprojection: max-pooling determines which output cells
+    # are wet (any wet source pixel in a coarser cell keeps it wet), bilinear
+    # provides smooth continuous depth values for mesh height/coloring.
+    depth_max = np.zeros((height, width), dtype=np.float32)
+    depth_bilinear = np.zeros((height, width), dtype=np.float32)
+    arrival = np.full((height, width), np.nan, dtype=np.float32)
     with rasterio.open(depth_path) as source:
-        reproject(source.read(1), depth, src_transform=source.transform, src_crs=source.crs,
+        src_data = source.read(1)
+        reproject(src_data, depth_max, src_transform=source.transform, src_crs=source.crs,
+                  dst_transform=transform, dst_crs="EPSG:4326", resampling=Resampling.max,
+                  src_nodata=source.nodata, dst_nodata=0)
+        reproject(src_data, depth_bilinear, src_transform=source.transform, src_crs=source.crs,
                   dst_transform=transform, dst_crs="EPSG:4326", resampling=Resampling.bilinear,
                   src_nodata=source.nodata, dst_nodata=0)
     with rasterio.open(arrival_path) as source:
         reproject(source.read(1), arrival, src_transform=source.transform, src_crs=source.crs,
-                  dst_transform=transform, dst_crs="EPSG:4326", resampling=Resampling.nearest,
+                  dst_transform=transform, dst_crs="EPSG:4326", resampling=Resampling.max,
                   src_nodata=source.nodata, dst_nodata=np.nan)
+    # Wet/dry from max-pooled raster; depth values from bilinear where wet,
+    # falling back to max where bilinear underflows to zero in narrow corridors.
+    wet = depth_max > 0
+    depth = np.where(wet, np.maximum(depth_bilinear, depth_max * 0.5), 0).astype(np.float32)
     depth = np.maximum(depth, 0)
-    arrival[(arrival < 0) | (depth <= 0)] = np.nan
+    arrival[(arrival < 0) | (~wet)] = np.nan
     if not np.any(depth > 0):
         raise SystemExit("Flood-depth raster contains no positive depths in the DEM extent.")
     finite_arrival = arrival[np.isfinite(arrival)]
