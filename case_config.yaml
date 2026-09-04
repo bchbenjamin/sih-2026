@@ -1,15 +1,15 @@
 blocking_material: moraine (boulders/gravel/sand/silt)
-case_name: chorabari
+case_name: ''
 dam_coordinates:
-- 30.7450008392334
-- 79.05500030517578
+- 0.0
+- 0.0
 dam_name: Chorabari moraine dam
 dam_type: natural
 dem_bbox:
-- 79.0
-- 30.649999618530273
-- 79.0999984741211
-- 30.799999237060547
+- 0.0
+- 0.0
+- 0.0
+- 0.0
 dem_source: SRTM GL1 via OpenTopography (downloaded at runtime; no synthetic fallback)
 downstream_points:
 - coordinates:
